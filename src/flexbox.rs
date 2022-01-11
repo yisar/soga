@@ -124,13 +124,15 @@ impl FlexBox {
         self.flex_grows = 0;
         self.flex_shrinks = 0;
     }
+}
 
-    pub fn flex_item_add(&mut self, mut item: FlexItem, child: FlexItem) {
-        item.children.push(Box::new(child))
+impl FlexItem {
+    pub fn flex_item_add(&mut self, child: FlexItem) {
+        self.children.push(Box::new(child))
     }
 
-    pub fn flex_item_delete(&mut self, mut item: FlexItem, index: usize) {
-        item.children.remove(index);
+    pub fn flex_item_delete(&mut self, index: usize) {
+        self.children.remove(index);
         ()
     }
 }
