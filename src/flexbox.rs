@@ -17,7 +17,7 @@ pub struct FlexItem {
     width: f64,
     height: f64,
     direction: Direction,
-    children:  Vec<Box<FlexItem>>,
+    children: Vec<Box<FlexItem>>,
     frame: (i64, i64, f64, f64),
     grow: i64,
     shrink: i64,
@@ -47,51 +47,19 @@ impl FlexBox {
         }
     }
 
-    pub fn layout_item(&mut self, mut item: &FlexItem, width: f64, height: f64) {
-        self.layout_init(item, width, height);
-
-        for i in item.children.iter() {
-            // i.frame = (0, 0, i.width, i.height);
-            self.flex_grows += i.grow;
-            self.flex_shrinks += i.shrink;
-            self.flex_dim -= i.frame.0
+    pub fn layout_item(&mut self, item: &mut FlexItem) {
+        let mut x = 0.0;
+        let mut y = 0.0;
+        for i in item.children.iter_mut() {
+            i.frame.2 = x;
+            i.frame.3 = y;
+            x += i.width;
+            y += i.height;
         }
     }
 
-    fn layout_init(&mut self, item: &FlexItem, width: f64, height: f64) {
-        self.reverse = false;
-        self.vertical = true;
-
-        match item.direction {
-            Direction::Row => {
-                self.vertical = false;
-                self.size_dim = width;
-                self.align_dim = height;
-                self.frame_pos = 0;
-                self.frame_pos2 = 1;
-                self.frame_size = 2;
-                self.frame_size2 = 3;
-            }
-            Direction::RowReverse => self.reverse = true,
-            Direction::Column => {
-                self.vertical = false;
-                self.size_dim = width;
-                self.align_dim = height;
-                self.frame_pos = 1;
-                self.frame_pos2 = 0;
-                self.frame_size = 3;
-                self.frame_size2 = 2;
-            }
-            Direction::ColumnReverse => self.reverse = true,
-        }
-
-        self.flex_dim = 0;
-        self.flex_grows = 0;
-        self.flex_shrinks = 0;
-    }
-
-    pub fn flex_layout(&mut self, mut root: &FlexItem) {
-        self.layout_item(root, root.width, root.height)
+    pub fn flex_layout(&mut self, root: &mut FlexItem) {
+        self.layout_item(root)
     }
 }
 
@@ -136,5 +104,4 @@ impl FlexItem {
     pub fn flex_item_set_height(&mut self, height: f64) {
         self.height = height;
     }
-
 }

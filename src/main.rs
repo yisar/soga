@@ -8,13 +8,13 @@ fn main() {
     child1.flex_item_set_width(40.0);
     child1.flex_item_set_height(40.0);
 
-    let mut child2 = FlexItem::flex_item_with_size(20.0, 20.0);
+    let mut child2 = FlexItem::flex_item_with_size(20.0, 10.0);
     
     root.flex_item_add(child1);
     root.flex_item_add(child2);
 
     let mut layout = FlexBox::new();
-    layout.layout_item(&root, 100.0, 100.0);
+    layout.layout_item(&mut root);
 
 
 
