@@ -1,3 +1,4 @@
+#[derive(Clone, Debug)]
 pub struct FlexBox {
     reverse: bool,
     vertical: bool,
@@ -11,17 +12,17 @@ pub struct FlexBox {
     flex_grows: i64,
     flex_shrinks: i64,
 }
-
+#[derive(Clone, Debug)]
 pub struct FlexItem {
     width: f64,
     height: f64,
     direction: Direction,
-    children: Vec<FlexItem>,
+    children:  Vec<Box<FlexItem>>,
     frame: (i64, i64, f64, f64),
     grow: i64,
     shrink: i64,
 }
-
+#[derive(Clone, Debug)]
 enum Direction {
     Row,
     RowReverse,
@@ -30,6 +31,21 @@ enum Direction {
 }
 
 impl FlexBox {
+    pub fn new() -> FlexBox {
+        FlexBox {
+            reverse: false,
+            vertical: false,
+            size_dim: 0.0,
+            align_dim: 0.0,
+            frame_pos: 0,
+            frame_pos2: 0,
+            frame_size: 0,
+            frame_size2: 0,
+            flex_dim: 0,
+            flex_grows: 0,
+            flex_shrinks: 0,
+        }
+    }
     pub fn flex_item_with_size(&self, width: f64, height: f64) -> FlexItem {
         FlexItem {
             width,
@@ -70,7 +86,7 @@ impl FlexBox {
         self.layout_init(item, width, height);
 
         for i in item.children.iter() {
-            i.frame = (0, 0, i.width, i.height);
+            // i.frame = (0, 0, i.width, i.height);
             self.flex_grows += i.grow;
             self.flex_shrinks += i.shrink;
             self.flex_dim -= i.frame.0
@@ -107,5 +123,14 @@ impl FlexBox {
         self.flex_dim = 0;
         self.flex_grows = 0;
         self.flex_shrinks = 0;
+    }
+
+    pub fn flex_item_add(&mut self, mut item: FlexItem, child: FlexItem) {
+        item.children.push(Box::new(child))
+    }
+
+    pub fn flex_item_delete(&mut self, mut item: FlexItem, index: usize) {
+        item.children.remove(index);
+        ()
     }
 }
