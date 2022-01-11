@@ -18,7 +18,7 @@ pub struct FlexItem {
     height: f64,
     direction: Direction,
     children: Vec<Box<FlexItem>>,
-    frame: (i64, i64, f64, f64),
+    frame: (f64, f64, f64, f64),
     grow: i64,
     shrink: i64,
 }
@@ -47,61 +47,61 @@ impl FlexBox {
         }
     }
 
-    pub fn layout_item(&mut self, item: &mut FlexItem) {
+    pub fn layout(&mut self, item: &mut FlexItem) {
         let mut x = 0.0;
         let mut y = 0.0;
         for i in item.children.iter_mut() {
-            i.frame.2 = x;
-            i.frame.3 = y;
+            i.frame.0 = x;
+            i.frame.1 = y;
             x += i.width;
             y += i.height;
         }
     }
 
     pub fn flex_layout(&mut self, root: &mut FlexItem) {
-        self.layout_item(root)
+        self.layout(root)
     }
 }
 
 impl FlexItem {
-    pub fn flex_item_add(&mut self, child: FlexItem) {
+    pub fn add(&mut self, child: FlexItem) {
         self.children.push(Box::new(child))
     }
 
-    pub fn flex_item_delete(&mut self, index: usize) {
+    pub fn delete(&mut self, index: usize) {
         self.children.remove(index);
         ()
     }
 
-    pub fn flex_item_with_size(width: f64, height: f64) -> FlexItem {
+    pub fn new(width: f64, height: f64) -> FlexItem {
         FlexItem {
             width,
             height,
             direction: Direction::Row,
             children: vec![],
-            frame: (0, 0, 0.0, 0.0),
+            frame: (0.0, 0.0, 0.0, 0.0),
             grow: 0,
             shrink: 0,
         }
     }
 
-    pub fn flex_item_new() -> FlexItem {
+    pub fn default() -> FlexItem {
         FlexItem {
             width: 0.0,
             height: 0.0,
             direction: Direction::Row,
             children: vec![],
-            frame: (0, 0, 0.0, 0.0),
+            frame: (0.0, 0.0, 0.0, 0.0),
             grow: 0,
             shrink: 0,
         }
     }
 
-    pub fn flex_item_set_width(&mut self, width: f64) {
+    pub fn set_width(&mut self, width: f64) {
         self.width = width;
     }
 
-    pub fn flex_item_set_height(&mut self, height: f64) {
+    pub fn set_height(&mut self, height: f64) {
         self.height = height;
     }
 }
