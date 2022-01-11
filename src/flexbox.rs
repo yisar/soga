@@ -2,9 +2,10 @@
 pub struct FlexBox {
     reverse: bool,
     vertical: bool,
-    dim: usize,
     size_i: usize,
     pos_i: usize,
+    size2_i: usize,
+    pos2_i: usize,
     grows: usize,
     shrinks: usize,
 }
@@ -17,6 +18,7 @@ pub struct FlexItem {
     frame: Vec<usize>,
     grow: usize,
     shrink: usize,
+    align_self: Align,
 }
 #[derive(Clone, Debug)]
 pub enum Direction {
@@ -24,6 +26,15 @@ pub enum Direction {
     RowReverse,
     Column,
     ColumnReverse,
+}
+
+#[derive(Clone, Debug)]
+pub enum Align {
+    Auto,
+    Center,
+    FlexStart,
+    FlexEnd,
+    Stretch,
 }
 
 impl FlexBox {
@@ -34,32 +45,42 @@ impl FlexBox {
             grows: 0,
             shrinks: 0,
             pos_i: 0,
-            dim: 0,
             size_i: 0,
+            size2_i: 0,
+            pos2_i: 0,
         }
     }
 
     pub fn layout(&mut self, item: &mut FlexItem) {
+        
+        let mut flex_dim = 0;
+        let mut align_dim = 0;
+        let mut size = 0;
+
         match &item.direction {
             Direction::Row => {
-                self.dim = item.width;
+                flex_dim = item.width;
+                align_dim = item.height;
                 self.pos_i = 0;
+                self.pos2_i = 1;
                 self.size_i = 2;
+                self.size2_i = 3;
             }
             Direction::RowReverse => {
                 self.reverse = true;
             }
             Direction::Column => {
-                self.dim = item.height;
+                flex_dim = item.height;
+                align_dim = item.width;
                 self.pos_i = 1;
+                self.pos2_i = 0;
                 self.size_i = 3;
+                self.size2_i = 2;
             }
             Direction::ColumnReverse => self.reverse = false,
         }
 
-        let mut pos = if self.reverse { self.dim } else { 0 };
-        let mut dim = item.height;
-        let mut size = 0;
+        let mut pos = if self.reverse { flex_dim } else { 0 };
 
         for child in item.children.iter_mut() {
             child.frame[0] = 0;
@@ -67,20 +88,20 @@ impl FlexBox {
             child.frame[2] = child.width;
             child.frame[3] = child.height;
 
-            dim -= child.frame[self.size_i];
+            flex_dim -= child.frame[self.size_i];
 
             self.grows += child.grow;
             self.shrinks += child.shrink;
         }
 
         for child in item.children.iter_mut() {
-            if dim > 0 {
+            if flex_dim > 0 {
                 if child.grow != 0 {
-                    size = (dim / (self.grows as usize)) * child.grow as usize;
+                    size = (flex_dim / (self.grows as usize)) * child.grow as usize;
                 }
             } else {
                 if child.shrink != 0 {
-                    size = (dim / (self.shrinks as usize)) * (child.shrink as usize);
+                    size = (flex_dim / (self.shrinks as usize)) * (child.shrink as usize);
                 }
             }
 
@@ -93,6 +114,23 @@ impl FlexBox {
                 child.frame[self.pos_i] = pos;
                 pos += child.frame[self.size_i];
             }
+
+            let mut align = 0;
+            match child.align_self {
+                Align::Auto => {}
+                Align::FlexStart => {}
+                Align::Center => {
+                    align = (align_dim / 2) - (child.frame[self.size2_i] / 2);
+                }
+                Align::FlexEnd => {
+                    align = align_dim - child.frame[self.size2_i];
+                }
+                Align::Stretch => {
+                    align = 0;
+                    child.frame[self.size2_i] = align_dim;
+                }
+            }
+            child.frame[self.pos2_i] = align;
         }
     }
 
@@ -120,6 +158,7 @@ impl FlexItem {
             frame: vec![0, 0, 0, 0],
             grow: 0,
             shrink: 0,
+            align_self: Align::Auto,
         }
     }
 
@@ -132,6 +171,7 @@ impl FlexItem {
             frame: vec![0, 0, 0, 0],
             grow: 0,
             shrink: 0,
+            align_self: Align::Auto,
         }
     }
 
