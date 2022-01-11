@@ -46,43 +46,8 @@ impl FlexBox {
             flex_shrinks: 0,
         }
     }
-    pub fn flex_item_with_size(&self, width: f64, height: f64) -> FlexItem {
-        FlexItem {
-            width,
-            height,
-            direction: Direction::Row,
-            children: vec![],
-            frame: (0, 0, 0.0, 0.0),
-            grow: 0,
-            shrink: 0,
-        }
-    }
 
-    pub fn flex_item_new(&self) -> FlexItem {
-        FlexItem {
-            width: 0.0,
-            height: 0.0,
-            direction: Direction::Row,
-            children: vec![],
-            frame: (0, 0, 0.0, 0.0),
-            grow: 0,
-            shrink: 0,
-        }
-    }
-
-    pub fn flex_item_set_width(&mut self, mut child: FlexItem, width: f64) {
-        child.width = width;
-    }
-
-    pub fn flex_item_set_height(&mut self, mut child: FlexItem, height: f64) {
-        child.height = height;
-    }
-
-    pub fn flex_layout(&mut self, mut root: &FlexItem) {
-        self.layout_item(root, root.width, root.height)
-    }
-
-    fn layout_item(&mut self, mut item: &FlexItem, width: f64, height: f64) {
+    pub fn layout_item(&mut self, mut item: &FlexItem, width: f64, height: f64) {
         self.layout_init(item, width, height);
 
         for i in item.children.iter() {
@@ -124,6 +89,10 @@ impl FlexBox {
         self.flex_grows = 0;
         self.flex_shrinks = 0;
     }
+
+    pub fn flex_layout(&mut self, mut root: &FlexItem) {
+        self.layout_item(root, root.width, root.height)
+    }
 }
 
 impl FlexItem {
@@ -135,4 +104,37 @@ impl FlexItem {
         self.children.remove(index);
         ()
     }
+
+    pub fn flex_item_with_size(width: f64, height: f64) -> FlexItem {
+        FlexItem {
+            width,
+            height,
+            direction: Direction::Row,
+            children: vec![],
+            frame: (0, 0, 0.0, 0.0),
+            grow: 0,
+            shrink: 0,
+        }
+    }
+
+    pub fn flex_item_new() -> FlexItem {
+        FlexItem {
+            width: 0.0,
+            height: 0.0,
+            direction: Direction::Row,
+            children: vec![],
+            frame: (0, 0, 0.0, 0.0),
+            grow: 0,
+            shrink: 0,
+        }
+    }
+
+    pub fn flex_item_set_width(&mut self, width: f64) {
+        self.width = width;
+    }
+
+    pub fn flex_item_set_height(&mut self, height: f64) {
+        self.height = height;
+    }
+
 }
