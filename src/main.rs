@@ -8,6 +8,10 @@ fn main() {
     let mut child2 = FlexItem::new(60.0, 0.0);
     let mut child3 = FlexItem::new(60.0, 0.0);
 
+    child1.set_grow(0);
+    child2.set_grow(1);
+    child3.set_grow(2);
+
 
     root.add(child1);
     root.add(child2);

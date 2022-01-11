@@ -2,15 +2,8 @@
 pub struct FlexBox {
     reverse: bool,
     vertical: bool,
-    size_dim: f64,
-    align_dim: f64,
-    frame_pos: i64,
-    frame_pos2: i64,
-    frame_size: i64,
-    frame_size2: i64,
-    flex_dim: i64,
-    flex_grows: i64,
-    flex_shrinks: i64,
+    grows: i64,
+    shrinks: i64,
 }
 #[derive(Clone, Debug)]
 pub struct FlexItem {
@@ -35,26 +28,38 @@ impl FlexBox {
         FlexBox {
             reverse: false,
             vertical: false,
-            size_dim: 0.0,
-            align_dim: 0.0,
-            frame_pos: 0,
-            frame_pos2: 0,
-            frame_size: 0,
-            frame_size2: 0,
-            flex_dim: 0,
-            flex_grows: 0,
-            flex_shrinks: 0,
+            grows: 0,
+            shrinks: 0,
         }
     }
 
     pub fn layout(&mut self, item: &mut FlexItem) {
         let mut x = 0.0;
         let mut y = 0.0;
-        for i in item.children.iter_mut() {
-            i.frame.0 = x;
-            i.frame.1 = y;
-            x += i.width;
-            y += i.height;
+
+        let mut dim = item.height;
+
+        for child in item.children.iter_mut() {
+            child.frame.0 = x;
+            child.frame.1 = y;
+            child.frame.2 = child.width;
+            child.frame.3 = child.height;
+
+            x += child.width;
+            y += child.height;
+
+            if child.grow == 0 {
+                dim -= child.height;
+            }
+
+            self.grows += child.grow;
+            self.shrinks += child.shrink;
+        }
+
+        for child in item.children.iter_mut() {
+            if child.grow != 0 {
+                child.frame.3 = (dim / (self.grows as f64)) * child.grow as f64;
+            }
         }
     }
 
@@ -103,5 +108,9 @@ impl FlexItem {
 
     pub fn set_height(&mut self, height: f64) {
         self.height = height;
+    }
+
+    pub fn set_grow(&mut self, grow: i64) {
+        self.grow = grow;
     }
 }
