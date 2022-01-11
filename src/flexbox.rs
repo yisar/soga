@@ -2,18 +2,21 @@
 pub struct FlexBox {
     reverse: bool,
     vertical: bool,
-    grows: i64,
-    shrinks: i64,
+    dim: usize,
+    size_i: usize,
+    pos_i: usize,
+    grows: usize,
+    shrinks: usize,
 }
 #[derive(Clone, Debug)]
 pub struct FlexItem {
-    width: f64,
-    height: f64,
+    width: usize,
+    height: usize,
     direction: Direction,
     children: Vec<Box<FlexItem>>,
-    frame: (f64, f64, f64, f64),
-    grow: i64,
-    shrink: i64,
+    frame: Vec<usize>,
+    grow: usize,
+    shrink: usize,
 }
 #[derive(Clone, Debug)]
 enum Direction {
@@ -30,42 +33,66 @@ impl FlexBox {
             vertical: false,
             grows: 0,
             shrinks: 0,
+            pos_i: 0,
+            dim: 0,
+            size_i: 0,
         }
     }
 
     pub fn layout(&mut self, item: &mut FlexItem) {
-        let mut x = 0.0;
-        let mut y = 0.0;
+        match &item.direction {
+            Direction::Row => {
+                self.dim = item.width;
+                self.pos_i = 0;
+                self.size_i = 2;
+            }
+            Direction::RowReverse => {
+                self.reverse = true;
+            }
+            Direction::Column => {
+                self.dim = item.height;
+                self.pos_i = 1;
+                self.size_i = 3;
+            }
+            Direction::ColumnReverse => self.reverse = false,
+        }
+
+        let mut pos = if self.reverse { self.dim } else { 0 };
         let mut dim = item.height;
+        let mut size = 0;
 
         for child in item.children.iter_mut() {
-            child.frame.2 = child.width;
-            child.frame.3 = child.height;
+            child.frame[0] = 0;
+            child.frame[1] = 0;
+            child.frame[2] = child.width;
+            child.frame[3] = child.height;
 
-            x += child.width;
-            y += child.height;
-
-            dim -= child.height;
+            dim -= child.frame[self.size_i];
 
             self.grows += child.grow;
             self.shrinks += child.shrink;
         }
 
-
         for child in item.children.iter_mut() {
-            child.frame.0 = x;
-            child.frame.1 = y;
-            if dim > 0.0 {
+            if dim > 0 {
                 if child.grow != 0 {
-                    child.frame.3 += (dim / (self.grows as f64)) * child.grow as f64;
+                    size += (dim / (self.grows as usize)) * child.grow as usize;
                 }
-            } else if dim < 0.0 {
+            } else if dim < 0 {
                 if child.shrink != 0 {
-                    child.frame.3 += (dim / (self.shrinks as f64)) * (child.shrink as f64);
+                    size += (dim / (self.shrinks as usize)) * (child.shrink as usize);
                 }
             }
-            y += child.frame.2;
-            y += child.frame.3;
+
+            child.frame[self.size_i] += size;
+
+            if self.reverse {
+                pos -= child.frame[self.size_i];
+                child.frame[self.pos_i] = pos;
+            } else {
+                child.frame[self.pos_i] = pos;
+                pos += child.frame[self.size_i];
+            }
         }
     }
 
@@ -84,13 +111,13 @@ impl FlexItem {
         ()
     }
 
-    pub fn new(width: f64, height: f64) -> FlexItem {
+    pub fn new(width: usize, height: usize) -> FlexItem {
         FlexItem {
             width,
             height,
             direction: Direction::Row,
             children: vec![],
-            frame: (0.0, 0.0, 0.0, 0.0),
+            frame: vec![0, 0, 0, 0],
             grow: 0,
             shrink: 0,
         }
@@ -98,25 +125,25 @@ impl FlexItem {
 
     pub fn default() -> FlexItem {
         FlexItem {
-            width: 0.0,
-            height: 0.0,
+            width: 0,
+            height: 0,
             direction: Direction::Row,
             children: vec![],
-            frame: (0.0, 0.0, 0.0, 0.0),
+            frame: vec![0, 0, 0, 0],
             grow: 0,
             shrink: 0,
         }
     }
 
-    pub fn set_width(&mut self, width: f64) {
+    pub fn set_width(&mut self, width: usize) {
         self.width = width;
     }
 
-    pub fn set_height(&mut self, height: f64) {
+    pub fn set_height(&mut self, height: usize) {
         self.height = height;
     }
 
-    pub fn set_grow(&mut self, grow: i64) {
+    pub fn set_grow(&mut self, grow: usize) {
         self.grow = grow;
     }
 }
