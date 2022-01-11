@@ -20,6 +20,7 @@ pub struct FlexItem {
     shrink: usize,
     align_self: Align,
     align_items: Align,
+    basis: usize,
 }
 #[derive(Clone, Debug)]
 pub enum Direction {
@@ -92,6 +93,10 @@ impl FlexBox {
 
             self.grows += child.grow;
             self.shrinks += child.shrink;
+
+            if child.basis > 0 {
+                child.frame[self.size_i] = child.basis;
+            }
         }
 
         for child in item.children.iter_mut() {
@@ -163,6 +168,7 @@ impl FlexItem {
             frame: vec![0, 0, 0, 0],
             grow: 0,
             shrink: 0,
+            basis:0,
             align_self: Align::Auto,
             align_items: Align::Auto,
         }
@@ -177,6 +183,7 @@ impl FlexItem {
             frame: vec![0, 0, 0, 0],
             grow: 0,
             shrink: 0,
+            basis:0,
             align_self: Align::Auto,
             align_items: Align::Auto,
         }
@@ -196,5 +203,27 @@ impl FlexItem {
 
     pub fn set_direction(&mut self, direction: Direction) {
         self.direction = direction;
+    }
+
+    pub fn set_align_self(&mut self, align: &str) {
+        let align_type = match align {
+            "center" => Align::Center,
+            "flex-start" => Align::FlexStart,
+            "flex-end" => Align::FlexEnd,
+            "stretch" => Align::Stretch,
+            _ => Align::Auto,
+        };
+        self.align_self = align_type
+    }
+
+    pub fn set_align_items(&mut self, align: &str) {
+        let align_type = match align {
+            "center" => Align::Center,
+            "flex-start" => Align::FlexStart,
+            "flex-end" => Align::FlexEnd,
+            "stretch" => Align::Stretch,
+            _ => Align::Auto,
+        };
+        self.align_items = align_type
     }
 }
