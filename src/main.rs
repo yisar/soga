@@ -1,7 +1,8 @@
 pub mod flexbox;
-use flexbox::FlexItem;
-use flexbox::FlexBox;
-use flexbox::Direction;
+
+use crate::flexbox::FlexItem;
+use crate::flexbox::FlexBox;
+use crate::flexbox::Direction;
 
 fn main() {
     let mut root = FlexItem::new(100, 240);
