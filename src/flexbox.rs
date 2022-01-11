@@ -16,6 +16,10 @@ pub struct FlexItem {
     width: f64,
     height: f64,
     direction: Direction,
+    children: Vec<FlexItem>,
+    frame: (i64, i64, f64, f64),
+    grow: i64,
+    shrink: i64,
 }
 
 enum Direction {
@@ -31,6 +35,10 @@ impl FlexBox {
             width,
             height,
             direction: Direction::Row,
+            children: vec![],
+            frame: (0, 0, 0.0, 0.0),
+            grow: 0,
+            shrink: 0,
         }
     }
 
@@ -39,6 +47,10 @@ impl FlexBox {
             width: 0.0,
             height: 0.0,
             direction: Direction::Row,
+            children: vec![],
+            frame: (0, 0, 0.0, 0.0),
+            grow: 0,
+            shrink: 0,
         }
     }
 
@@ -55,7 +67,14 @@ impl FlexBox {
     }
 
     fn layout_item(&mut self, mut item: &FlexItem, width: f64, height: f64) {
-        self.layout_init(item, width, height)
+        self.layout_init(item, width, height);
+
+        for i in item.children.iter() {
+            i.frame = (0, 0, i.width, i.height);
+            self.flex_grows += i.grow;
+            self.flex_shrinks += i.shrink;
+            self.flex_dim -= i.frame.0
+        }
     }
 
     fn layout_init(&mut self, item: &FlexItem, width: f64, height: f64) {
