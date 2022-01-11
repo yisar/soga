@@ -21,6 +21,7 @@ pub struct FlexItem {
     align_self: Align,
     align_items: Align,
     basis: usize,
+    justify_content: Align,
 }
 #[derive(Clone, Debug)]
 pub enum Direction {
@@ -37,6 +38,8 @@ pub enum Align {
     FlexStart,
     FlexEnd,
     Stretch,
+    Between,
+    Around,
 }
 
 impl FlexBox {
@@ -111,13 +114,36 @@ impl FlexBox {
             }
 
             child.frame[self.size_i] += size;
+            let mut spacing = 0;
+            match child.justify_content {
+                Align::FlexEnd => {
+                    pos = flex_dim;
+                }
+                Align::Center => {
+                    pos = flex_dim / 2;
+                }
+                Align::Between => {
+                    if child.children.len() > 0 {
+                        spacing = flex_dim / (child.children.len() - 1);
+                    }
+                }
+                Align::Around => {
+                    if child.children.len() > 0 {
+                        spacing = flex_dim / child.children.len();
+                        pos = spacing / 2;
+                    }
+                }
+                _ => {}
+            }
+
+            let a_pos = child.frame[self.size_i] + spacing;
 
             if self.reverse {
-                pos -= child.frame[self.size_i];
+                pos -= a_pos;
                 child.frame[self.pos_i] = pos;
             } else {
                 child.frame[self.pos_i] = pos;
-                pos += child.frame[self.size_i];
+                pos += a_pos;
             }
 
             let mut align = 0;
@@ -139,6 +165,7 @@ impl FlexBox {
                     align = 0;
                     child.frame[self.size2_i] = align_dim;
                 }
+                _ => {}
             }
             child.frame[self.pos2_i] = align;
         }
@@ -168,9 +195,10 @@ impl FlexItem {
             frame: vec![0, 0, 0, 0],
             grow: 0,
             shrink: 0,
-            basis:0,
+            basis: 0,
             align_self: Align::Auto,
             align_items: Align::Auto,
+            justify_content: Align::Auto,
         }
     }
 
@@ -183,9 +211,10 @@ impl FlexItem {
             frame: vec![0, 0, 0, 0],
             grow: 0,
             shrink: 0,
-            basis:0,
+            basis: 0,
             align_self: Align::Auto,
             align_items: Align::Auto,
+            justify_content: Align::Auto,
         }
     }
 
