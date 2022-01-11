@@ -1,9 +1,11 @@
 pub mod flexbox;
 use flexbox::FlexItem;
 use flexbox::FlexBox;
+use flexbox::Direction;
 
 fn main() {
     let mut root = FlexItem::new(100, 240);
+    root.set_direction(Direction::Column);
     let mut child1 = FlexItem::new(60, 30);
     let mut child2 = FlexItem::new(60, 0);
     let mut child3 = FlexItem::new(60, 0);

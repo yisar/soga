@@ -19,7 +19,7 @@ pub struct FlexItem {
     shrink: usize,
 }
 #[derive(Clone, Debug)]
-enum Direction {
+pub enum Direction {
     Row,
     RowReverse,
     Column,
@@ -76,11 +76,11 @@ impl FlexBox {
         for child in item.children.iter_mut() {
             if dim > 0 {
                 if child.grow != 0 {
-                    size += (dim / (self.grows as usize)) * child.grow as usize;
+                    size = (dim / (self.grows as usize)) * child.grow as usize;
                 }
-            } else if dim < 0 {
+            } else {
                 if child.shrink != 0 {
-                    size += (dim / (self.shrinks as usize)) * (child.shrink as usize);
+                    size = (dim / (self.shrinks as usize)) * (child.shrink as usize);
                 }
             }
 
@@ -145,5 +145,9 @@ impl FlexItem {
 
     pub fn set_grow(&mut self, grow: usize) {
         self.grow = grow;
+    }
+
+    pub fn set_direction(&mut self, direction: Direction) {
+        self.direction = direction;
     }
 }
