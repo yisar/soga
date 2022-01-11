@@ -19,6 +19,7 @@ pub struct FlexItem {
     grow: usize,
     shrink: usize,
     align_self: Align,
+    align_items: Align,
 }
 #[derive(Clone, Debug)]
 pub enum Direction {
@@ -28,7 +29,7 @@ pub enum Direction {
     ColumnReverse,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub enum Align {
     Auto,
     Center,
@@ -52,7 +53,6 @@ impl FlexBox {
     }
 
     pub fn layout(&mut self, item: &mut FlexItem) {
-        
         let mut flex_dim = 0;
         let mut align_dim = 0;
         let mut size = 0;
@@ -116,7 +116,12 @@ impl FlexBox {
             }
 
             let mut align = 0;
-            match child.align_self {
+            let mut align_type = &child.align_self;
+
+            if align_type == &Align::Auto {
+                align_type = &child.align_items;
+            }
+            match align_type {
                 Align::Auto => {}
                 Align::FlexStart => {}
                 Align::Center => {
@@ -159,6 +164,7 @@ impl FlexItem {
             grow: 0,
             shrink: 0,
             align_self: Align::Auto,
+            align_items: Align::Auto,
         }
     }
 
@@ -172,6 +178,7 @@ impl FlexItem {
             grow: 0,
             shrink: 0,
             align_self: Align::Auto,
+            align_items: Align::Auto,
         }
     }
 
