@@ -36,30 +36,36 @@ impl FlexBox {
     pub fn layout(&mut self, item: &mut FlexItem) {
         let mut x = 0.0;
         let mut y = 0.0;
-
         let mut dim = item.height;
 
         for child in item.children.iter_mut() {
-            child.frame.0 = x;
-            child.frame.1 = y;
             child.frame.2 = child.width;
             child.frame.3 = child.height;
 
             x += child.width;
             y += child.height;
 
-            if child.grow == 0 {
-                dim -= child.height;
-            }
+            dim -= child.height;
 
             self.grows += child.grow;
             self.shrinks += child.shrink;
         }
 
+
         for child in item.children.iter_mut() {
-            if child.grow != 0 {
-                child.frame.3 = (dim / (self.grows as f64)) * child.grow as f64;
+            child.frame.0 = x;
+            child.frame.1 = y;
+            if dim > 0.0 {
+                if child.grow != 0 {
+                    child.frame.3 += (dim / (self.grows as f64)) * child.grow as f64;
+                }
+            } else if dim < 0.0 {
+                if child.shrink != 0 {
+                    child.frame.3 += (dim / (self.shrinks as f64)) * (child.shrink as f64);
+                }
             }
+            y += child.frame.2;
+            y += child.frame.3;
         }
     }
 
