@@ -2,7 +2,6 @@ use soga::flexbox::FlexBox;
 use soga::flexbox::FlexItem;
 use std::convert::TryInto;
 
-
 #[test]
 fn grow() {
     let mut root = FlexItem::new(100, 240);
@@ -17,7 +16,6 @@ fn grow() {
     child2.grow = 1;
     child3.grow = 2;
 
-
     root.add(child1);
     root.add(child2);
     root.add(child3);
@@ -25,7 +23,7 @@ fn grow() {
     let mut layout = FlexBox::new();
     layout.layout(&mut root);
 
-    assert_eq!(root.children[0].frame, [0,0,60,30]);
-    assert_eq!(root.children[1].frame, [0,30,60,70]);
-    assert_eq!(root.children[2].frame, [0,100,60,140])
+    assert_eq!(root.children[0].frame, [0, 0, 60, 30]);
+    assert_eq!(root.children[1].frame, [0, 30, 60, 70]);
+    assert_eq!(root.children[2].frame, [0, 100, 60, 140])
 }
