@@ -6,7 +6,7 @@ use std::convert::TryInto;
 fn grow() {
     let mut root = FlexItem::new(100, 240);
 
-    root.direction = "column".try_into()?;
+    root.direction = "column".try_into().unwrap();
 
     let mut child1 = FlexItem::new(60, 30);
     let mut child2 = FlexItem::new(60, 0);
