@@ -1,141 +1,3 @@
-use std::convert::TryFrom;
-use std::fmt::{Display, Formatter};
-
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub enum Direction {
-    Row,
-    RowReverse,
-    Column,
-    ColumnReverse,
-}
-
-impl<'a> TryFrom<&'a str> for Direction {
-    type Error = ();
-
-    fn try_from(src: &'a str) -> Result<Self, Self::Error> {
-        if src.eq_ignore_ascii_case("row") {
-            Ok(Self::Row)
-        } else if src.eq_ignore_ascii_case("row-reverse") {
-            Ok(Self::RowReverse)
-        } else if src.eq_ignore_ascii_case("column") {
-            Ok(Self::Column)
-        } else if src.eq_ignore_ascii_case("column-reverse") {
-            Ok(Self::ColumnReverse)
-        } else {
-            Err(())
-        }
-    }
-}
-
-impl Display for Direction {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Self::Row => write!(f, "row"),
-            Self::RowReverse => write!(f, "row-reverse"),
-            Self::Column => write!(f, "column"),
-            Self::ColumnReverse => write!(f, "column-reverse"),
-        }
-    }
-}
-
-impl Into<String> for Direction {
-    fn into(self) -> String {
-        self.to_string()
-    }
-}
-
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub enum Align {
-    Auto,
-    Center,
-    FlexStart,
-    FlexEnd,
-    Stretch,
-    Between,
-    Around,
-}
-
-impl<'a> From<&'a str> for Align {
-    fn from(src: &'a str) -> Self {
-        if src.eq_ignore_ascii_case("auto") {
-            Self::Auto
-        } else if src.eq_ignore_ascii_case("center") {
-            Self::Center
-        } else if src.eq_ignore_ascii_case("flex-start") {
-            Self::FlexStart
-        } else if src.eq_ignore_ascii_case("flex-end") {
-            Self::FlexEnd
-        } else if src.eq_ignore_ascii_case("stretch") {
-            Self::Stretch
-        } else if src.eq_ignore_ascii_case("between") {
-            Self::Between
-        } else if src.eq_ignore_ascii_case("around") {
-            Self::Around
-        } else {
-            Self::Auto
-        }
-    }
-}
-
-impl Display for Align {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Self::Auto => write!(f, "auto"),
-            Self::Center => write!(f, "center"),
-            Self::FlexStart => write!(f, "flex-start"),
-            Self::FlexEnd => write!(f, "flex-end"),
-            Self::Stretch => write!(f, "stretch"),
-            Self::Between => write!(f, "between"),
-            Self::Around => write!(f, "around"),
-        }
-    }
-}
-
-impl Into<String> for Align {
-    fn into(self) -> String {
-        self.to_string()
-    }
-}
-
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub enum Wrap {
-    Wrap,
-    NoWrap,
-    WrapReverse,
-}
-
-impl<'a> TryFrom<&'a str> for Wrap {
-    type Error = ();
-
-    fn try_from(src: &'a str) -> Result<Self, Self::Error> {
-        if src.eq_ignore_ascii_case("wrap") {
-            Ok(Self::Wrap)
-        } else if src.eq_ignore_ascii_case("nowrap") {
-            Ok(Self::NoWrap)
-        } else if src.eq_ignore_ascii_case("wrap-reverse") {
-            Ok(Self::WrapReverse)
-        } else {
-            Err(())
-        }
-    }
-}
-
-impl Display for Wrap {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Self::Wrap => write!(f, "wrap"),
-            Self::NoWrap => write!(f, "nowrap"),
-            Self::WrapReverse => write!(f, "wrap-reverse"),
-        }
-    }
-}
-
-impl Into<String> for Wrap {
-    fn into(self) -> String {
-        self.to_string()
-    }
-}
-
 #[derive(Clone, Debug)]
 pub struct FlexBox {
     reverse: bool,
@@ -146,21 +8,44 @@ pub struct FlexBox {
     grows: usize,
     shrinks: usize,
 }
-
 #[derive(Clone, Debug)]
 pub struct FlexItem {
     width: usize,
     height: usize,
     direction: Direction,
-    children: Vec<FlexItem>,
-    frame: [usize; 4],
-    pub grow: usize,
-    pub shrink: usize,
-    pub align_self: Align,
-    pub align_items: Align,
-    pub basis: usize,
-    pub justify_content: Align,
-    pub wrap: Wrap,
+    children: Vec<Box<FlexItem>>,
+    frame: Vec<usize>,
+    grow: usize,
+    shrink: usize,
+    align_self: Align,
+    align_items: Align,
+    basis: usize,
+    justify_content: Align,
+    wrap: Wrap,
+}
+#[derive(Clone, Debug)]
+pub enum Direction {
+    Row,
+    RowReverse,
+    Column,
+    ColumnReverse,
+}
+
+#[derive(Clone, Debug, PartialEq)]
+pub enum Align {
+    Auto,
+    Center,
+    FlexStart,
+    FlexEnd,
+    Stretch,
+    Between,
+    Around,
+}
+#[derive(Clone, Debug)]
+pub enum Wrap {
+    Wrap,
+    NoWrap,
+    WrapReverse,
 }
 
 impl FlexBox {
@@ -315,7 +200,7 @@ impl FlexBox {
 
 impl FlexItem {
     pub fn add(&mut self, child: FlexItem) {
-        self.children.push(child)
+        self.children.push(Box::new(child))
     }
 
     pub fn delete(&mut self, index: usize) {
@@ -329,7 +214,7 @@ impl FlexItem {
             height,
             direction: Direction::Row,
             children: vec![],
-            frame: [0; 4],
+            frame: vec![0, 0, 0, 0],
             grow: 0,
             shrink: 0,
             basis: 0,
@@ -346,7 +231,7 @@ impl FlexItem {
             height: 0,
             direction: Direction::Row,
             children: vec![],
-            frame: [0; 4],
+            frame: vec![0, 0, 0, 0],
             grow: 0,
             shrink: 0,
             basis: 0,
@@ -355,5 +240,58 @@ impl FlexItem {
             justify_content: Align::Auto,
             wrap: Wrap::NoWrap,
         }
+    }
+
+    pub fn set_width(&mut self, width: usize) {
+        self.width = width;
+    }
+
+    pub fn set_height(&mut self, height: usize) {
+        self.height = height;
+    }
+
+    pub fn set_grow(&mut self, grow: usize) {
+        self.grow = grow;
+    }
+
+    pub fn set_wrap(&mut self, wrap: &str) {
+        let wrap_type = match wrap {
+            "wrap" => Wrap::Wrap,
+            "wrap-reverse" => Wrap::WrapReverse,
+            _ => Wrap::NoWrap,
+        };
+        self.wrap = wrap_type
+    }
+
+    pub fn set_direction(&mut self, direction: &str) {
+        let direction_type = match direction {
+            "row-reverse" => Direction::RowReverse,
+            "column" => Direction::Column,
+            "column-reverse" => Direction::ColumnReverse,
+            _ => Direction::Row,
+        };
+        self.direction = direction_type;
+    }
+
+    pub fn set_align_self(&mut self, align: &str) {
+        let align_type = match align {
+            "center" => Align::Center,
+            "flex-start" => Align::FlexStart,
+            "flex-end" => Align::FlexEnd,
+            "stretch" => Align::Stretch,
+            _ => Align::Auto,
+        };
+        self.align_self = align_type
+    }
+
+    pub fn set_align_items(&mut self, align: &str) {
+        let align_type = match align {
+            "center" => Align::Center,
+            "flex-start" => Align::FlexStart,
+            "flex-end" => Align::FlexEnd,
+            "stretch" => Align::Stretch,
+            _ => Align::Auto,
+        };
+        self.align_items = align_type
     }
 }
