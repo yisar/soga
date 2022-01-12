@@ -1,7 +1,6 @@
 #[derive(Clone, Debug)]
 pub struct FlexBox {
     reverse: bool,
-    vertical: bool,
     size_i: usize,
     pos_i: usize,
     size2_i: usize,
@@ -53,7 +52,6 @@ impl FlexBox {
     pub fn new() -> FlexBox {
         FlexBox {
             reverse: false,
-            vertical: false,
             grows: 0,
             shrinks: 0,
             pos_i: 0,
