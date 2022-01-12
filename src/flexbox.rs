@@ -105,11 +105,11 @@ impl FlexBox {
         for child in item.children.iter_mut() {
             if flex_dim > 0 {
                 if child.grow != 0 {
-                    size = (flex_dim / (self.grows as usize)) * child.grow as usize;
+                    size = (flex_dim / self.grows) * child.grow;
                 }
             } else {
                 if child.shrink != 0 {
-                    size = (flex_dim / (self.shrinks as usize)) * (child.shrink as usize);
+                    size = (flex_dim / self.shrinks) * child.shrink;
                 }
             }
 
