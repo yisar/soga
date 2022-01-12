@@ -22,6 +22,7 @@ pub struct FlexItem {
     align_items: Align,
     basis: usize,
     justify_content: Align,
+    wrap: Wrap,
 }
 #[derive(Clone, Debug)]
 pub enum Direction {
@@ -40,6 +41,12 @@ pub enum Align {
     Stretch,
     Between,
     Around,
+}
+#[derive(Clone, Debug)]
+pub enum Wrap {
+    Wrap,
+    NoWrap,
+    WrapReverse,
 }
 
 impl FlexBox {
@@ -103,13 +110,30 @@ impl FlexBox {
         }
 
         for child in item.children.iter_mut() {
-            if flex_dim > 0 {
-                if child.grow != 0 {
-                    size = (flex_dim / self.grows) * child.grow;
+            let wrap_dim = flex_dim;
+            match item.wrap {
+                Wrap::NoWrap => {
+                    if flex_dim > 0 {
+                        if child.grow != 0 {
+                            size = (flex_dim / self.grows) * child.grow;
+                        }
+                    } else {
+                        if child.shrink != 0 {
+                            size = (flex_dim / self.shrinks) * child.shrink;
+                        }
+                    }
                 }
-            } else {
-                if child.shrink != 0 {
-                    size = (flex_dim / self.shrinks) * child.shrink;
+                Wrap::Wrap => {
+                    let child_size = child.frame[self.size_i];
+                    if wrap_dim >= child_size {
+                        wrap_dim -= child_size;
+                    } else {
+                        wrap_dim = flex_dim;
+                        pos += child.frame[self.size_i];
+                    }
+                }
+                Wrap::WrapReverse => {
+                    unimplemented!()
                 }
             }
 
