@@ -25,5 +25,7 @@ fn grow() {
     let mut layout = FlexBox::new();
     layout.layout(&mut root);
 
-    assert_eq!(root.children[0].frame, [0,0,60,30])
+    assert_eq!(root.children[0].frame, [0,0,60,30]);
+    assert_eq!(root.children[1].frame, [0,30,60,70]);
+    assert_eq!(root.children[2].frame, [0,100,60,140])
 }
