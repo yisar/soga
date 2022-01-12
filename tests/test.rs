@@ -6,7 +6,7 @@ use std::convert::TryInto;
 fn grow() {
     let mut root = FlexItem::new(100, 240);
 
-    root.direction = "column".try_into().unwrap();
+    root.direction = "column".try_into()?;
 
     let mut child1 = FlexItem::new(60, 30);
     let mut child2 = FlexItem::new(60, 0);
@@ -20,8 +20,8 @@ fn grow() {
     root.add(child2);
     root.add(child3);
 
-    let mut layout = FlexBox::new();
-    layout.layout(&mut root);
+    let mut flexbox = FlexBox::new();
+    flexbox.layout(&mut root);
 
     assert_eq!(root.children[0].frame, [0, 0, 60, 30]);
     assert_eq!(root.children[1].frame, [0, 30, 60, 70]);
