@@ -1,12 +1,14 @@
 use soga::flexbox::FlexBox;
 use soga::flexbox::FlexItem;
-use soga::flexbox::Direction;
+use std::convert::TryInto;
 
 
 #[test]
 fn grow() {
     let mut root = FlexItem::new(100, 240);
-    root.direction = Direction::Column;
+
+    root.direction = "column".try_into().unwrap();
+
     let mut child1 = FlexItem::new(60, 30);
     let mut child2 = FlexItem::new(60, 0);
     let mut child3 = FlexItem::new(60, 0);
@@ -23,5 +25,5 @@ fn grow() {
     let mut layout = FlexBox::new();
     layout.layout(&mut root);
 
-    assert_eq!(root.children[0].frame, vec![0,0,60,30])
+    assert_eq!(root.children[0].frame, [0,0,60,30])
 }
