@@ -5,7 +5,7 @@ Yoga alternative
 [![tag](https://img.shields.io/github/tag/yisar/soga.svg)](https://github.com/yisar/deku)
 [![license](https://img.shields.io/github/license/yisar/soga.svg)](https://github.com/yisar/deku)
 
-### Tests
+### Test
 
 ```shell
 cargo test
