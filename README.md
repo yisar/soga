@@ -47,4 +47,4 @@ fn main() {
 
 ### License
 
-MIT ©yisar inspired by vite.
+MIT ©yisar inspired by yoga.
