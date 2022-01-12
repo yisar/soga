@@ -1,6 +1,18 @@
 use std::convert::TryFrom;
 use std::fmt::{Display, Formatter};
 
+use thiserror::Error;
+
+#[derive(Error, Debug)]
+pub enum FlexError {
+    #[error("bad direction value `{0}`")]
+    BadDirection(String),
+    #[error("bad wrap value `{0}`")]
+    BadWrap(String)
+}
+
+pub use FlexError as Error;
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum Direction {
     Row,
@@ -10,7 +22,7 @@ pub enum Direction {
 }
 
 impl<'a> TryFrom<&'a str> for Direction {
-    type Error = ();
+    type Error = FlexError;
 
     fn try_from(src: &'a str) -> Result<Self, Self::Error> {
         if src.eq_ignore_ascii_case("row") {
@@ -22,7 +34,7 @@ impl<'a> TryFrom<&'a str> for Direction {
         } else if src.eq_ignore_ascii_case("column-reverse") {
             Ok(Self::ColumnReverse)
         } else {
-            Err(())
+            Err(FlexError::BadDirection(src.to_string()))
         }
     }
 }
@@ -105,7 +117,7 @@ pub enum Wrap {
 }
 
 impl<'a> TryFrom<&'a str> for Wrap {
-    type Error = ();
+    type Error = FlexError;
 
     fn try_from(src: &'a str) -> Result<Self, Self::Error> {
         if src.eq_ignore_ascii_case("wrap") {
@@ -115,7 +127,7 @@ impl<'a> TryFrom<&'a str> for Wrap {
         } else if src.eq_ignore_ascii_case("wrap-reverse") {
             Ok(Self::WrapReverse)
         } else {
-            Err(())
+            Err(FlexError::BadWrap(src.to_string()))
         }
     }
 }
