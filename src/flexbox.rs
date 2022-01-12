@@ -110,7 +110,7 @@ impl FlexBox {
         }
 
         for child in item.children.iter_mut() {
-            let wrap_dim = flex_dim;
+            let mut wrap_dim = flex_dim;
             match item.wrap {
                 Wrap::NoWrap => {
                     if flex_dim > 0 {
@@ -223,6 +223,7 @@ impl FlexItem {
             align_self: Align::Auto,
             align_items: Align::Auto,
             justify_content: Align::Auto,
+            wrap: Wrap::NoWrap,
         }
     }
 
@@ -239,6 +240,7 @@ impl FlexItem {
             align_self: Align::Auto,
             align_items: Align::Auto,
             justify_content: Align::Auto,
+            wrap: Wrap::NoWrap,
         }
     }
 
@@ -254,8 +256,23 @@ impl FlexItem {
         self.grow = grow;
     }
 
-    pub fn set_direction(&mut self, direction: Direction) {
-        self.direction = direction;
+    pub fn set_wrap(&mut self, wrap: &str) {
+        let wrap_type = match wrap {
+            "wrap" => Wrap::Wrap,
+            "wrap-reverse" => Wrap::WrapReverse,
+            _ => Wrap::NoWrap,
+        };
+        self.wrap = wrap_type
+    }
+
+    pub fn set_direction(&mut self, direction: &str) {
+        let direction_type = match direction {
+            "row-reverse" => Direction::RowReverse,
+            "column" => Direction::Column,
+            "column-reverse" => Direction::ColumnReverse,
+            _ => Direction::Row,
+        };
+        self.direction = direction_type;
     }
 
     pub fn set_align_self(&mut self, align: &str) {
