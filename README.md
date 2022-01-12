@@ -1,7 +1,7 @@
 # soga
 Yoga alternative
 
-[![Build Status](https://github.com/yisar/soga/workflows/ci/badge.svg?branch=master)](https://github.com/yisar/soga/actions)
+[![Build Status](https://github.com/yisar/soga/actions/workflows/rust.yml/badge.svg)](https://github.com/yisar/soga/actions)
 [![tag](https://img.shields.io/github/tag/yisar/soga.svg)](https://github.com/yisar/deku)
 [![license](https://img.shields.io/github/license/yisar/soga.svg)](https://github.com/yisar/deku)
 
