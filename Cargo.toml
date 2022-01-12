@@ -1,12 +1,12 @@
 [package]
-name = "flexbox"
+name = "soga"
 version = "0.0.1"
 authors = ["132yse <1533540012@qq.com>"]
 license = "MIT"
 readme = "README.md"
-repository = "https://github.com/yisar/flexbox"
-documentation = "https://github.com/yisar/flexbox"
-homepage = "https://crates.io/crates/flexbox"
+repository = "https://github.com/yisar/soga"
+documentation = "https://github.com/yisar/soga"
+homepage = "https://crates.io/crates/soga"
 description = """
 Layout engine
 """

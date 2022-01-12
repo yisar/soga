@@ -1,2 +1,2 @@
 # soga
-Yogo alternative
+Yoga alternative
