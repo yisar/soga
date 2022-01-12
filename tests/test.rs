@@ -1,10 +1,10 @@
-pub mod flexbox;
+use soga::flexbox::FlexBox;
+use soga::flexbox::FlexItem;
+use soga::flexbox::Direction;
 
-use crate::flexbox::FlexItem;
-use crate::flexbox::FlexBox;
-use crate::flexbox::Direction;
 
-fn main() {
+#[test]
+fn grow() {
     let mut root = FlexItem::new(100, 240);
     root.direction = Direction::Column;
     let mut child1 = FlexItem::new(60, 30);
@@ -23,8 +23,5 @@ fn main() {
     let mut layout = FlexBox::new();
     layout.layout(&mut root);
 
-    print!("{:#?}", root);
-
+    assert_eq!(root.children[0].frame, vec![0,0,60,30])
 }
-
-

@@ -161,11 +161,11 @@ pub struct FlexBox {
 
 #[derive(Clone, Debug)]
 pub struct FlexItem {
-    width: usize,
-    height: usize,
-    direction: Direction,
-    children: Vec<FlexItem>,
-    frame: [usize; 4],
+    pub width: usize,
+    pub height: usize,
+    pub direction: Direction,
+    pub children: Vec<FlexItem>,
+    pub frame: [usize; 4],
     pub grow: usize,
     pub shrink: usize,
     pub align_self: Align,
