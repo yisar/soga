@@ -13,7 +13,11 @@ cargo test
 
 ### Use
 
-```rust
+```rs
+use soga::flexbox::FlexBox;
+use soga::flexbox::FlexItem;
+use std::convert::TryInto;
+
 fn main() {
     let mut root = FlexItem::new(100, 240);
 
