@@ -9,8 +9,8 @@ fn justify_content() {
     root.direction = "column".try_into().unwrap();
     root.justify_content = "center".try_into().unwrap();
 
-    let mut child1 = FlexItem::new(50, 100);
-    let mut child2 = FlexItem::new(50, 100);
+    let child1 = FlexItem::new(50, 100);
+    let child2 = FlexItem::new(50, 100);
 
     root.add(child1);
     root.add(child2);

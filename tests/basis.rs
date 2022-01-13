@@ -12,7 +12,7 @@ fn basis() {
     
     child1.basis = 60;
     
-    let mut child2 = FlexItem::new(100, 40);
+    let child2 = FlexItem::new(100, 40);
 
     root.add(child1);
     root.add(child2);
