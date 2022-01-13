@@ -8,7 +8,7 @@ pub enum FlexError {
     #[error("bad direction value `{0}`")]
     BadDirection(String),
     #[error("bad wrap value `{0}`")]
-    BadWrap(String)
+    BadWrap(String),
 }
 
 pub use FlexError as Error;
@@ -223,7 +223,6 @@ impl FlexBox {
             child.frame[1] = 0;
             child.frame[2] = child.width;
             child.frame[3] = child.height;
-
             flex_dim -= child.frame[self.size_i];
 
             self.grows += child.grow;
@@ -235,7 +234,6 @@ impl FlexBox {
         }
 
         for child in item.children.iter_mut() {
-            let mut wrap_dim = flex_dim;
             match item.wrap {
                 Wrap::NoWrap => {
                     if flex_dim > 0 {
@@ -248,51 +246,46 @@ impl FlexBox {
                         }
                     }
                 }
-                Wrap::Wrap => {
-                    let child_size = child.frame[self.size_i];
-                    if wrap_dim >= child_size {
-                        wrap_dim -= child_size;
-                    } else {
-                        wrap_dim = flex_dim;
-                        pos += child.frame[self.size_i];
-                    }
-                }
+                Wrap::Wrap => {}
                 Wrap::WrapReverse => {
                     unimplemented!()
                 }
             }
 
             child.frame[self.size_i] += size;
-            let mut spacing = 0;
-            match child.justify_content {
-                Align::FlexEnd => {
-                    pos = flex_dim;
-                }
-                Align::Center => {
-                    pos = flex_dim / 2;
-                }
-                Align::Between => {
-                    if child.children.len() > 0 {
-                        spacing = flex_dim / (child.children.len() - 1);
+
+            if pos == 0 {
+                let mut spacing = 0;
+                match item.justify_content {
+                    Align::FlexEnd => {
+                        pos = flex_dim;
                     }
-                }
-                Align::Around => {
-                    if child.children.len() > 0 {
-                        spacing = flex_dim / child.children.len();
-                        pos = spacing / 2;
+                    Align::Center => {
+                        pos = flex_dim / 2;
                     }
+                    Align::Between => {
+                        if child.children.len() > 0 {
+                            spacing = flex_dim / (child.children.len() - 1);
+                        }
+                    }
+                    Align::Around => {
+                        if child.children.len() > 0 {
+                            spacing = flex_dim / child.children.len();
+                            pos = spacing / 2;
+                        }
+                    }
+                    _ => {}
                 }
-                _ => {}
             }
 
-            let a_pos = child.frame[self.size_i] + spacing;
+            child.frame[self.pos_i] += pos;
 
             if self.reverse {
-                pos -= a_pos;
                 child.frame[self.pos_i] = pos;
+                pos -= child.frame[self.size_i];
             } else {
                 child.frame[self.pos_i] = pos;
-                pos += a_pos;
+                pos += child.frame[self.size_i]
             }
 
             let mut align = 0;

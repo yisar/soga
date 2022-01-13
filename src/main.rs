@@ -2,26 +2,23 @@ pub mod flexbox;
 
 use crate::flexbox::FlexItem;
 use crate::flexbox::FlexBox;
-use crate::flexbox::Direction;
+use std::convert::TryInto;
+
 
 fn main() {
-    let mut root = FlexItem::new(100, 240);
-    root.direction = Direction::Column;
-    let mut child1 = FlexItem::new(60, 30);
-    let mut child2 = FlexItem::new(60, 0);
-    let mut child3 = FlexItem::new(60, 0);
+    let mut root = FlexItem::new(100, 300);
 
-    child1.grow = 0;
-    child2.grow = 1;
-    child3.grow = 2;
+    root.direction = "column".try_into().unwrap();
+    root.justify_content = "center".try_into().unwrap();
 
+    let mut child1 = FlexItem::new(50, 100);
+    let mut child2 = FlexItem::new(50, 100);
 
     root.add(child1);
     root.add(child2);
-    root.add(child3);
 
-    let mut layout = FlexBox::new();
-    layout.layout(&mut root);
+    let mut flexbox = FlexBox::new();
+    flexbox.layout(&mut root);
 
     print!("{:#?}", root);
 
