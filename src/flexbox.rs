@@ -155,22 +155,22 @@ pub struct FlexBox {
     pos_i: usize,
     size2_i: usize,
     pos2_i: usize,
-    grows: usize,
-    shrinks: usize,
+    grows: isize,
+    shrinks: isize,
 }
 
 #[derive(Clone, Debug)]
 pub struct FlexItem {
-    pub width: usize,
-    pub height: usize,
+    pub width: isize,
+    pub height: isize,
     pub direction: Direction,
     pub children: Vec<FlexItem>,
-    pub frame: [usize; 4],
-    pub grow: usize,
-    pub shrink: usize,
+    pub frame: [isize; 4],
+    pub grow: isize,
+    pub shrink: isize,
     pub align_self: Align,
     pub align_items: Align,
-    pub basis: usize,
+    pub basis: isize,
     pub justify_content: Align,
     pub wrap: Wrap,
 }
@@ -189,14 +189,14 @@ impl FlexBox {
     }
 
     pub fn layout(&mut self, item: &mut FlexItem) {
-        let mut flex_dim = 0;
+        let mut flex_dim:isize = 0;
         let mut align_dim = 0;
         let mut size = 0;
 
         match &item.direction {
             Direction::Row => {
-                flex_dim = item.width;
-                align_dim = item.height;
+                flex_dim = item.width as isize;
+                align_dim = item.height as isize;
                 self.pos_i = 0;
                 self.pos2_i = 1;
                 self.size_i = 2;
@@ -206,8 +206,8 @@ impl FlexBox {
                 self.reverse = true;
             }
             Direction::Column => {
-                flex_dim = item.height;
-                align_dim = item.width;
+                flex_dim = item.height as isize;
+                align_dim = item.width as isize;
                 self.pos_i = 1;
                 self.pos2_i = 0;
                 self.size_i = 3;
@@ -223,7 +223,8 @@ impl FlexBox {
             child.frame[1] = 0;
             child.frame[2] = child.width;
             child.frame[3] = child.height;
-            flex_dim -= child.frame[self.size_i];
+
+            flex_dim -= child.frame[self.size_i] as isize;
 
             self.grows += child.grow;
             self.shrinks += child.shrink;
@@ -240,9 +241,10 @@ impl FlexBox {
                         if child.grow != 0 {
                             size = (flex_dim / self.grows) * child.grow;
                         }
-                    } else {
+                    } else if flex_dim < 0 {
                         if child.shrink != 0 {
                             size = (flex_dim / self.shrinks) * child.shrink;
+                            println!("{:#?}",size);
                         }
                     }
                 }
@@ -265,12 +267,12 @@ impl FlexBox {
                     }
                     Align::Between => {
                         if child.children.len() > 0 {
-                            spacing = flex_dim / (child.children.len() - 1);
+                            spacing = flex_dim / (child.children.len() - 1) as isize;
                         }
                     }
                     Align::Around => {
                         if child.children.len() > 0 {
-                            spacing = flex_dim / child.children.len();
+                            spacing = flex_dim / child.children.len() as isize;
                             pos = spacing / 2;
                         }
                     }
@@ -329,7 +331,7 @@ impl FlexItem {
         ()
     }
 
-    pub fn new(width: usize, height: usize) -> FlexItem {
+    pub fn new(width: isize, height: isize) -> FlexItem {
         FlexItem {
             width,
             height,
