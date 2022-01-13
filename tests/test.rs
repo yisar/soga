@@ -76,6 +76,7 @@ fn align_items() {
     let mut root = FlexItem::new(100, 10);
 
     root.direction = "column".try_into().unwrap();
+    root.align_items = "center".try_into().unwrap();
 
     let mut child1 = FlexItem::new(50, 25);
     let mut child2 = FlexItem::new(50, 25);
