@@ -151,10 +151,10 @@ impl Into<String> for Wrap {
 #[derive(Clone, Debug)]
 pub struct FlexBox {
     reverse: bool,
-    size_i: usize,
-    pos_i: usize,
-    size2_i: usize,
-    pos2_i: usize,
+    size1: usize,
+    pos1: usize,
+    size2: usize,
+    pos2: usize,
     grows: isize,
     shrinks: isize,
 }
@@ -181,10 +181,10 @@ impl FlexBox {
             reverse: false,
             grows: 0,
             shrinks: 0,
-            pos_i: 0,
-            size_i: 0,
-            size2_i: 0,
-            pos2_i: 0,
+            pos1: 0,
+            size1: 0,
+            size2: 0,
+            pos2: 0,
         }
     }
 
@@ -197,10 +197,10 @@ impl FlexBox {
             Direction::Row => {
                 flex_dim = item.width as isize;
                 align_dim = item.height as isize;
-                self.pos_i = 0;
-                self.pos2_i = 1;
-                self.size_i = 2;
-                self.size2_i = 3;
+                self.pos1 = 0;
+                self.pos2 = 1;
+                self.size1 = 2;
+                self.size2 = 3;
             }
             Direction::RowReverse => {
                 self.reverse = true;
@@ -208,10 +208,10 @@ impl FlexBox {
             Direction::Column => {
                 flex_dim = item.height as isize;
                 align_dim = item.width as isize;
-                self.pos_i = 1;
-                self.pos2_i = 0;
-                self.size_i = 3;
-                self.size2_i = 2;
+                self.pos1 = 1;
+                self.pos2 = 0;
+                self.size1 = 3;
+                self.size2 = 2;
             }
             Direction::ColumnReverse => self.reverse = false,
         }
@@ -224,13 +224,13 @@ impl FlexBox {
             child.frame[2] = child.width;
             child.frame[3] = child.height;
 
-            flex_dim -= child.frame[self.size_i] as isize;
+            flex_dim -= child.frame[self.size1] as isize;
 
             self.grows += child.grow;
             self.shrinks += child.shrink;
 
             if child.basis > 0 {
-                child.frame[self.size_i] = child.basis;
+                child.frame[self.size1] = child.basis;
             }
         }
 
@@ -254,7 +254,7 @@ impl FlexBox {
                 }
             }
 
-            child.frame[self.size_i] += size;
+            child.frame[self.size1] += size;
 
             if pos == 0 {
                 let mut spacing = 0;
@@ -280,14 +280,14 @@ impl FlexBox {
                 }
             }
 
-            child.frame[self.pos_i] += pos;
+            child.frame[self.pos1] += pos;
 
             if self.reverse {
-                child.frame[self.pos_i] = pos;
-                pos -= child.frame[self.size_i];
+                child.frame[self.pos1] = pos;
+                pos -= child.frame[self.size1];
             } else {
-                child.frame[self.pos_i] = pos;
-                pos += child.frame[self.size_i]
+                child.frame[self.pos1] = pos;
+                pos += child.frame[self.size1]
             }
 
             let mut align = 0;
@@ -301,18 +301,18 @@ impl FlexBox {
                 Align::Auto => {}
                 Align::FlexStart => {}
                 Align::Center => {
-                    align = (align_dim / 2) - (child.frame[self.size2_i] / 2);
+                    align = (align_dim / 2) - (child.frame[self.size2] / 2);
                 }
                 Align::FlexEnd => {
-                    align = align_dim - child.frame[self.size2_i];
+                    align = align_dim - child.frame[self.size2];
                 }
                 Align::Stretch => {
                     align = 0;
-                    child.frame[self.size2_i] = align_dim;
+                    child.frame[self.size2] = align_dim;
                 }
                 _ => {}
             }
-            child.frame[self.pos2_i] = align;
+            child.frame[self.pos2] = align;
         }
     }
 
