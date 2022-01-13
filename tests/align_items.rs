@@ -9,9 +9,9 @@ fn align_items() {
     root.direction = "column".try_into().unwrap();
     root.align_items = "center".try_into().unwrap();
 
-    let mut child1 = FlexItem::new(50, 25);
-    let mut child2 = FlexItem::new(50, 25);
-    let mut child3 = FlexItem::new(50, 25);
+    let child1 = FlexItem::new(50, 25);
+    let child2 = FlexItem::new(50, 25);
+    let child3 = FlexItem::new(50, 25);
 
     root.add(child1);
     root.add(child2);
