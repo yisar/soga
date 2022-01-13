@@ -2,7 +2,8 @@
 Yoga alternative
 
 [![Build Status](https://github.com/yisar/soga/actions/workflows/rust.yml/badge.svg)](https://github.com/yisar/soga/actions)
-[![tag](https://img.shields.io/github/tag/yisar/soga.svg)](https://github.com/yisar/deku)
+[![crates.io](https://img.shields.io/crates/v/soga.svg)](https://crates.io/crates/soga)
+[![crates.io](https://docs.rs/soga/badge.svg)](https://docs.rs/soga/)
 [![license](https://img.shields.io/github/license/yisar/soga.svg)](https://github.com/yisar/deku)
 
 ### Test
