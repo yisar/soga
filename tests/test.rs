@@ -73,7 +73,7 @@ fn justify_content() {
 
 #[test]
 fn align_items() {
-    let mut root = FlexItem::new(100, 10);
+    let mut root = FlexItem::new(100, 100);
 
     root.direction = "column".try_into().unwrap();
     root.align_items = "center".try_into().unwrap();

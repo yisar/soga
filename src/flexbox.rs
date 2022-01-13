@@ -289,11 +289,12 @@ impl FlexBox {
             }
 
             let mut align = 0;
-            let mut align_type = &child.align_self;
+            let mut align_type = &item.align_self;
 
             if align_type == &Align::Auto {
-                align_type = &child.align_items;
+                align_type = &item.align_items;
             }
+
             match align_type {
                 Align::Auto => {}
                 Align::FlexStart => {}
