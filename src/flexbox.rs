@@ -335,6 +335,10 @@ impl FlexItem {
         ()
     }
 
+    pub fn insert(&mut self, index: usize, child: FlexItem) {
+        self.children.insert(index, child)
+    }
+
     pub fn new(width: isize, height: isize) -> FlexItem {
         FlexItem {
             width,
