@@ -23,8 +23,8 @@ use std::convert::TryInto;
 fn main() {
     let mut root = FlexItem::new(100, 100);
 
-    let mut child1 = FlexItem::new(100, 50);
-    let mut child2 = FlexItem::new(100, 50);
+    let child1 = FlexItem::new(100, 50);
+    let child2 = FlexItem::new(100, 50);
 
     root.add(child1);
     root.add(child2);
