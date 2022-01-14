@@ -173,6 +173,7 @@ pub struct FlexItem {
     pub basis: isize,
     pub justify_content: Align,
     pub wrap: Wrap,
+    pub order: isize,
 }
 
 impl FlexBox {
@@ -189,7 +190,7 @@ impl FlexBox {
     }
 
     pub fn layout(&mut self, item: &mut FlexItem) {
-        let mut flex_dim:isize = 0;
+        let mut flex_dim: isize = 0;
         let mut align_dim = 0;
         let mut size = 0;
 
@@ -215,6 +216,9 @@ impl FlexBox {
             }
             Direction::ColumnReverse => self.reverse = false,
         }
+
+        item.children
+            .sort_by(|a, b| a.order.partial_cmp(&b.order).unwrap());
 
         let mut pos = if self.reverse { flex_dim } else { 0 };
 
@@ -244,7 +248,7 @@ impl FlexBox {
                     } else if flex_dim < 0 {
                         if child.shrink != 0 {
                             size = (flex_dim / self.shrinks) * child.shrink;
-                            println!("{:#?}",size);
+                            println!("{:#?}", size);
                         }
                     }
                 }
@@ -345,6 +349,7 @@ impl FlexItem {
             align_items: Align::Auto,
             justify_content: Align::Auto,
             wrap: Wrap::NoWrap,
+            order: 0,
         }
     }
 
@@ -362,6 +367,7 @@ impl FlexItem {
             align_items: Align::Auto,
             justify_content: Align::Auto,
             wrap: Wrap::NoWrap,
+            order: 0,
         }
     }
 }
