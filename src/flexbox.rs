@@ -248,7 +248,6 @@ impl FlexBox {
                     } else if flex_dim < 0 {
                         if child.shrink != 0 {
                             size = (flex_dim / self.shrinks) * child.shrink;
-                            println!("{:#?}", size);
                         }
                     }
                 }
@@ -260,8 +259,9 @@ impl FlexBox {
 
             child.frame[self.size1] += size;
 
+            let mut spacing = 0;
+
             if pos == 0 {
-                let mut spacing = 0;
                 match item.justify_content {
                     Align::FlexEnd => {
                         pos = flex_dim;
@@ -284,7 +284,7 @@ impl FlexBox {
                 }
             }
 
-            child.frame[self.pos1] += pos;
+            child.frame[self.pos1] += pos + spacing;
 
             if self.reverse {
                 child.frame[self.pos1] = pos;
