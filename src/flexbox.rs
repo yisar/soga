@@ -1,6 +1,6 @@
 use std::convert::TryFrom;
 use std::fmt::{Display, Formatter};
-
+use core::cell::RefCell;
 use thiserror::Error;
 
 #[derive(Error, Debug)]
@@ -223,6 +223,9 @@ impl FlexBox {
         let mut pos = if self.reverse { flex_dim } else { 0 };
 
         for child in item.children.iter_mut() {
+
+            self.layout(child);
+
             child.frame[0] = 0;
             child.frame[1] = 0;
             child.frame[2] = child.width;
@@ -327,12 +330,11 @@ impl FlexBox {
 
 impl FlexItem {
     pub fn add(&mut self, child: FlexItem) {
-        self.children.push(child)
+        self.children.push(child);
     }
 
     pub fn delete(&mut self, index: usize) {
         self.children.remove(index);
-        ()
     }
 
     pub fn insert(&mut self, index: usize, child: FlexItem) {
