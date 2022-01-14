@@ -349,7 +349,17 @@ impl FlexItem {
         FlexItem {
             width,
             height,
-            ..FlexItem::default()
+            direction: Direction::Row,
+            children: vec![],
+            frame: [0; 4],
+            grow: 0,
+            shrink: 0,
+            basis: 0,
+            align_self: Align::Auto,
+            align_items: Align::Auto,
+            justify_content: Align::Auto,
+            wrap: Wrap::NoWrap,
+            order: 0,
         }
     }
 
