@@ -190,6 +190,7 @@ impl FlexBox {
     }
 
     pub fn layout(&mut self, item: &mut FlexItem) {
+        
         let mut flex_dim: isize = 0;
         let mut align_dim = 0;
         let mut size = 0;
@@ -223,9 +224,6 @@ impl FlexBox {
         let mut pos = if self.reverse { flex_dim } else { 0 };
 
         for child in item.children.iter_mut() {
-
-            self.layout(child);
-
             child.frame[0] = 0;
             child.frame[1] = 0;
             child.frame[2] = child.width;
@@ -239,6 +237,7 @@ impl FlexBox {
             if child.basis > 0 {
                 child.frame[self.size1] = child.basis;
             }
+
         }
 
         for child in item.children.iter_mut() {
@@ -287,7 +286,7 @@ impl FlexBox {
                 }
             }
 
-            child.frame[self.pos1] += pos + spacing;
+            child.frame[self.pos1] += pos;
 
             if self.reverse {
                 child.frame[self.pos1] = pos;
@@ -321,6 +320,11 @@ impl FlexBox {
             }
             child.frame[self.pos2] = align;
         }
+
+        for child in item.children.iter_mut(){
+            self.layout(child);
+        }
+
     }
 
     pub fn flex_layout(&mut self, root: &mut FlexItem) {
