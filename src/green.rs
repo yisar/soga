@@ -10,16 +10,25 @@ pub struct GreenTreeData {
     tag: String,
     width: usize,
     height: usize,
+    // todo more flex params
     children: Vec<GreenTree>,
 }
 
 impl GreenTree {
-    pub fn new(tag: impl Into<String>) -> GreenTreeData {
-        GreenTreeData { tag: tag.into(), width: 0, height: 0, children: Vec::new() }
+    pub fn new(tag: impl Into<String>, width: usize, height: usize) -> GreenTreeData {
+        GreenTreeData { tag: tag.into(), width, height, children: Vec::new() }
     }
 
     pub fn tag(&self) -> &str {
         self.data.tag.as_str()
+    }
+
+    pub fn width(&self) -> usize {
+        self.data.width
+    }
+
+    pub fn height(&self) -> usize {
+        self.data.height
     }
 
     pub fn children(&self) -> impl Iterator<Item = &GreenTree> {
@@ -64,7 +73,7 @@ impl From<GreenTreeData> for GreenTree {
 
 impl<T: Into<String>> From<T> for GreenTree {
     fn from(tag: T) -> Self {
-        GreenTree::new(tag).into()
+        GreenTree::new(tag, 0, 0).into()
     }
 }
 
@@ -75,7 +84,7 @@ impl fmt::Display for GreenTree {
 }
 
 fn fmt_rec(f: &mut fmt::Formatter<'_>, lvl: usize, tree: &GreenTree) -> fmt::Result {
-    writeln!(f, "{:indent$}{}", "", tree.tag(), indent = lvl * 2)?;
+    writeln!(f, "{:indent$}{} {} {}", "", tree.tag(), tree.width(), tree.height(), indent = lvl * 2)?;
     for child in tree.children() {
         fmt_rec(f, lvl + 1, child)?;
     }
