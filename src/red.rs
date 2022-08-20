@@ -23,14 +23,21 @@ impl RedTree {
             },
         }
     }
-    pub fn layout(&self, green: &GreenTree, x2: usize, y2: usize) -> RedTreeData {
+    pub fn layout(
+        &self,
+        green: &GreenTree,
+        sx: usize,
+        sy: usize,
+        px: usize,
+        py: usize
+    ) -> RedTreeData {
         let mut x = 0;
         let mut y = 0;
 
         let children = green
             .children()
             .map(|child| {
-                let ret = self.layout(child, x, y);
+                let ret = self.layout(child, x, y, sx, sy);
                 x += child.width();
                 y += child.height();
                 ret
@@ -38,7 +45,7 @@ impl RedTree {
             .collect::<Vec<_>>();
 
         RedTreeData {
-            frame: [x2, y2, green.width(), green.height()],
+            frame: [px + sx, py + sy, green.width(), green.height()],
             children,
             green: green.clone(),
         }
@@ -56,7 +63,6 @@ impl fmt::Debug for RedTreeData {
         fmt::Display::fmt(&self, f)
     }
 }
-
 
 fn fmt_rec(f: &mut fmt::Formatter<'_>, lvl: usize, tree: &RedTreeData) -> fmt::Result {
     writeln!(
