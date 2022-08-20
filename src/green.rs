@@ -1,3 +1,5 @@
+use std::{ fmt, sync::Arc };
+
 #[derive(Clone)]
 pub struct GreenTree {
     data: Arc<GreenTreeData>,
@@ -12,8 +14,8 @@ pub struct GreenTreeData {
 }
 
 impl GreenTree {
-    pub fn new(tag: impl Into<String>, width: usize, height: usize) -> GreenTreeData {
-        GreenTreeData { tag: tag.into(), children: Vec::new() }
+    pub fn new(tag: impl Into<String>) -> GreenTreeData {
+        GreenTreeData { tag: tag.into(), width: 0, height: 0, children: Vec::new() }
     }
 
     pub fn tag(&self) -> &str {
@@ -54,9 +56,15 @@ impl GreenTreeData {
     }
 }
 
-impl<T: Into<String>, U: Into<usize>> From<T, U> for GreenTree {
-    fn from(tag: T, width: U, height: U) -> Self {
-        GreenTree::new(tag, width, height).into()
+impl From<GreenTreeData> for GreenTree {
+    fn from(data: GreenTreeData) -> GreenTree {
+        GreenTree { data: Arc::new(data) }
+    }
+}
+
+impl<T: Into<String>> From<T> for GreenTree {
+    fn from(tag: T) -> Self {
+        GreenTree::new(tag).into()
     }
 }
 
@@ -67,7 +75,7 @@ impl fmt::Display for GreenTree {
 }
 
 fn fmt_rec(f: &mut fmt::Formatter<'_>, lvl: usize, tree: &GreenTree) -> fmt::Result {
-    writeln!(f, "{:indent$}{}", "", tree.kind(), indent = lvl * 2)?;
+    writeln!(f, "{:indent$}{}", "", tree.tag(), indent = lvl * 2)?;
     for child in tree.children() {
         fmt_rec(f, lvl + 1, child)?;
     }
