@@ -1,177 +1,77 @@
-use std::{
-    cell::{Cell, RefCell},
-    fmt, iter,
-    rc::{self, Rc},
-};
-use crate::sll;
-use crate::green;
-
-pub use green::{GreenTree, GreenTreeData};
-use rc::Weak;
+use crate::green::{ GreenTree, GreenTreeData };
+use std::{ fmt, sync::Arc };
 
 #[derive(Clone)]
 pub struct RedTree {
-    data: Rc<RedTreeData>,
+    pub data: RedTreeData,
 }
 
-struct RedTreeData {
-    green: RefCell<GreenTree>,
-    parent: Cell<Option<RedTree>>,
-    index: Cell<usize>,
-    first: Cell<rc::Weak<RedTreeData>>,
-    next: Cell<rc::Weak<RedTreeData>>,
-    prev: Cell<rc::Weak<RedTreeData>>,
-}
-
-impl sll::Elem for RedTreeData {
-    fn prev(&self) -> &Cell<Weak<Self>> {
-        &self.prev
-    }
-    fn next(&self) -> &Cell<Weak<Self>> {
-        &self.next
-    }
-    fn key(&self) -> &Cell<usize> {
-        &self.index
-    }
+#[derive(Clone)]
+pub struct RedTreeData {
+    pub frame: [usize; 4],
+    pub green: GreenTree,
+    pub children: Vec<RedTreeData>,
 }
 
 impl RedTree {
-    fn new(green: GreenTree, parent: Option<RedTree>, index: usize) -> RedTree {
-        let data = RedTreeData {
-            green: RefCell::new(green),
-            parent: Cell::new(parent),
-            index: Cell::new(index),
-            first: Default::default(),
-            next: Default::default(),
-            prev: Default::default(),
-        };
-        let data = Rc::new(data);
-        data.next.set(Rc::downgrade(&data));
-        data.prev.set(Rc::downgrade(&data));
-        RedTree { data }
-    }
-    pub fn tag(&self) -> String {
-        self.data.green.borrow().tag().to_string()
-    }
-    pub fn parent(&self) -> Option<RedTree> {
-        let ret = self.data.parent.take();
-        self.data.parent.set(ret.clone());
-        ret
-    }
-    pub fn first_child(&self) -> Option<RedTree> {
-        self.get_child(0)
-    }
-    pub fn next_sibling(&self) -> Option<RedTree> {
-        let parent = self.parent()?;
-        let index = self.data.index.get() + 1;
-        parent.get_child(index)
-    }
-    pub fn prev_sibling(&self) -> Option<RedTree> {
-        let parent = self.parent()?;
-        let index = self.data.index.get().checked_sub(1)?;
-        parent.get_child(index)
-    }
-    fn get_child(&self, index: usize) -> Option<RedTree> {
-        let green = self.data.green.borrow().get_child(index).cloned()?;
-        let parent = Some(self.clone());
-        let mut res = RedTree::new(green, parent, index);
-        sll::link(&self.data.first, &mut res.data);
-        Some(res)
-    }
-
-    pub fn children(&self) -> impl Iterator<Item = RedTree> {
-        iter::successors(self.first_child(), |it| it.next_sibling())
-    }
-    pub fn find(&self, tag: &str) -> Option<RedTree> {
-        self.children().find(|it| it.tag() == tag)
-    }
-
-    pub fn insert_child(&self, index: usize, mut child: RedTree) {
-        assert!(child.parent().is_none());
-        let weak = self.data.first.take();
-        let first = weak.upgrade();
-        self.data.first.set(weak);
-        if let Some(first) = first {
-            sll::adjust(&first, index, 1);
-        }
-        sll::link(&self.data.first, &mut child.data);
-
-        let green = self.data.green.borrow().insert_child(index, child.data.green.borrow().clone());
-        self.replace_green(green)
-    }
-    pub fn detach(&self) {
-        if let Some(parent) = self.parent() {
-            let green = parent.data.green.borrow().remove_child(self.data.index.get());
-            parent.replace_green(green);
-        }
-        sll::adjust(&self.data, self.data.index.get() + 1, -1);
-        self.unlink();
-    }
-    fn replace_green(&self, mut green: GreenTree) {
-        let mut node = self.clone();
-        loop {
-            *node.data.green.borrow_mut() = green.clone();
-            match node.parent() {
-                Some(parent) => {
-                    green = parent.data.green.borrow().replace_child(node.data.index.get(), green);
-                    node = parent
-                }
-                None => return,
-            }
+    pub fn new(green: GreenTree) -> RedTree {
+        RedTree {
+            data: RedTreeData {
+                frame: [0; 4],
+                green: green,
+                children: Vec::new(),
+            },
         }
     }
-    fn unlink(&self) {
-        let dummy;
-        let parent = self.data.parent.take();
-        let head = match parent.as_ref() {
-            Some(it) => &it.data.first,
-            None => {
-                dummy = Cell::new(rc::Weak::new());
-                &dummy
-            }
-        };
-        sll::unlink(head, &self.data);
-        self.data.index.set(0);
-    }
-}
+    pub fn layout(&self, green: &GreenTree, x2: usize, y2: usize) -> RedTreeData {
+        let mut x = 0;
+        let mut y = 0;
 
-impl Drop for RedTree {
-    fn drop(&mut self) {
-        if Rc::strong_count(&self.data) == 1 {
-            assert!(self.data.first.take().strong_count() == 0);
-            self.unlink()
+        let children = green
+            .children()
+            .map(|child| {
+                let ret = self.layout(child, x, y);
+                x += child.width();
+                y += child.height();
+                ret
+            })
+            .collect::<Vec<_>>();
+
+        RedTreeData {
+            frame: [x2, y2, green.width(), green.height()],
+            children,
+            green: green.clone(),
         }
     }
 }
 
-impl From<GreenTree> for RedTree {
-    fn from(green: GreenTree) -> Self {
-        RedTree::new(green, None, !0)
-    }
-}
-
-impl fmt::Display for RedTree {
+impl fmt::Display for RedTreeData {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        fmt::Display::fmt(&*self.data.green.borrow(), f)
+        fmt_rec(f, 0, self)
     }
 }
 
-impl fmt::Debug for RedTree {
+impl fmt::Debug for RedTreeData {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         fmt::Display::fmt(&self, f)
     }
 }
 
-impl PartialEq for RedTree {
-    fn eq(&self, other: &RedTree) -> bool {
-        self.data.green == other.data.green
-    }
-}
 
-impl Eq for RedTree {}
-
-impl fmt::Debug for RedTreeData {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        fmt::Display::fmt(&*self.green.borrow(), f)
+fn fmt_rec(f: &mut fmt::Formatter<'_>, lvl: usize, tree: &RedTreeData) -> fmt::Result {
+    writeln!(
+        f,
+        "{:indent$}{} [{}, {}, {}, {}]",
+        "",
+        tree.green.tag(),
+        tree.frame[0],
+        tree.frame[1],
+        tree.frame[2],
+        tree.frame[3],
+        indent = lvl * 2
+    )?;
+    for child in tree.children.iter() {
+        fmt_rec(f, lvl + 1, child)?;
     }
+    Ok(())
 }
