@@ -20,6 +20,6 @@ fn main() {
     let tree = make_tree();
     // println!("{:#?}", tree);
     let flexbox = RedTree::new(tree);
-    let res = flexbox.layout(&flexbox.data.green, 0, 0, 0, 0);
+    let res = flexbox.layout(&flexbox.data.green, 0, 0, None);
     println!("{:#?}", res);
 }

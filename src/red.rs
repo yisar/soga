@@ -1,5 +1,5 @@
-use crate::green::{ GreenTree, GreenTreeData };
-use std::{ fmt, sync::Arc };
+use crate::green::{ GreenTree };
+use std::{ fmt };
 
 #[derive(Clone)]
 pub struct RedTree {
@@ -10,7 +10,13 @@ pub struct RedTree {
 pub struct RedTreeData {
     pub frame: [usize; 4],
     pub green: GreenTree,
+    pub parent: Option<ParentData>,
     pub children: Vec<RedTreeData>,
+}
+
+#[derive(Clone)]
+pub struct ParentData {
+    pub frame: [usize; 4],
 }
 
 impl RedTree {
@@ -19,6 +25,7 @@ impl RedTree {
             data: RedTreeData {
                 frame: [0; 4],
                 green: green,
+                parent: None,
                 children: Vec::new(),
             },
         }
@@ -28,27 +35,40 @@ impl RedTree {
         green: &GreenTree,
         sx: usize,
         sy: usize,
-        px: usize,
-        py: usize
+        parent: Option<ParentData>
     ) -> RedTreeData {
         let mut x = 0;
         let mut y = 0;
+        let mut px = 0;
+        let mut py = 0;
 
         let children = green
             .children()
             .map(|child| {
-                let ret = self.layout(child, x, y, sx, sy);
+                let parent_data = ParentData {
+                    frame: [sx, sy, green.width(), green.height()],
+                };
+                let ret = self.layout(child, x, y, Some(parent_data));
                 x += child.width();
                 y += child.height();
                 ret
             })
             .collect::<Vec<_>>();
 
-        RedTreeData {
+        match &parent {
+            Some(p) => {
+                px = p.frame[0];
+                py = p.frame[1];
+            }
+            None => {}
+        }
+
+        return RedTreeData {
+            parent: parent,
             frame: [px + sx, py + sy, green.width(), green.height()],
             children,
             green: green.clone(),
-        }
+        };
     }
 }
 
