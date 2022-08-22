@@ -1,7 +1,7 @@
 use std::{
     cell::{Cell, RefCell},
     fmt, iter,
-    rc::{self, Rc},
+    rc::{self, Rc, Weak},
 };
 use crate::sll;
 use crate::green;
@@ -18,9 +18,9 @@ struct RedTreeData {
     green: RefCell<GreenTree>,
     parent: Cell<Option<RedTree>>,
     index: Cell<usize>,
-    first: Cell<rc::Weak<RedTreeData>>,
-    next: Cell<rc::Weak<RedTreeData>>,
-    prev: Cell<rc::Weak<RedTreeData>>,
+    first: Cell<Weak<RedTreeData>>,
+    next: Cell<Weak<RedTreeData>>,
+    prev: Cell<Weak<RedTreeData>>,
 }
 
 impl sll::Elem for RedTreeData {
@@ -126,7 +126,7 @@ impl RedTree {
         let head = match parent.as_ref() {
             Some(it) => &it.data.first,
             None => {
-                dummy = Cell::new(rc::Weak::new());
+                dummy = Cell::new(Weak::new());
                 &dummy
             }
         };
