@@ -1,30 +1,22 @@
-pub mod flexbox;
+pub mod green;
+pub mod red;
+pub mod sll;
 
-use crate::flexbox::FlexItem;
-use crate::flexbox::FlexBox;
-use std::convert::TryInto;
+use crate::green::*;
 
-
-fn main() {
-    let mut root = FlexItem::new(100, 100);
-
-    root.direction = "column".try_into().unwrap();
-    root.align_items = "center".try_into().unwrap();
-
-    let child1 = FlexItem::new(50, 25);
-    let child2 = FlexItem::new(50, 25);
-    let child3 = FlexItem::new(50, 25);
-
-    root.add(child1);
-    root.add(child2);
-    root.add(child3);
-
-    let mut flexbox = FlexBox::new();
-    flexbox.layout(&mut root);
-
-
-    println!("{:#?}", root);
-
+fn make_tree() -> GreenTree {
+    let tree: GreenTree = GreenTree::new("div", 10, 10)
+        .push("111")
+        .push(
+            GreenTree::new("ul", 6, 6)
+                .push(GreenTree::new("li", 2, 2).push("222"))
+                .push(GreenTree::new("li", 4, 4).push("333"))
+        )
+        .into();
+    tree.into()
 }
 
-
+fn main() {
+    let tree = make_tree();
+    println!("{:#?}", tree);
+}
