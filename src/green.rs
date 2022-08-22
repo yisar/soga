@@ -16,7 +16,7 @@ pub struct GreenTreeData {
 
 impl GreenTree {
     pub fn new(tag: impl Into<String>, width: usize, height: usize) -> GreenTreeData {
-        GreenTreeData { tag: tag.into(), width, height, children: Vec::new()}
+        GreenTreeData { tag: tag.into(), width, height, children: Vec::new() }
     }
 
     pub fn tag(&self) -> &str {
@@ -84,15 +84,7 @@ impl fmt::Display for GreenTree {
 }
 
 fn fmt_rec(f: &mut fmt::Formatter<'_>, lvl: usize, tree: &GreenTree) -> fmt::Result {
-    writeln!(
-        f,
-        "{:indent$}{} {} {}",
-        "",
-        tree.tag(),
-        tree.width(),
-        tree.height(),
-        indent = lvl * 2
-    )?;
+    writeln!(f, "{:indent$}{} {} {}", "", tree.tag(), tree.width(), tree.height(), indent = lvl * 2)?;
     for child in tree.children() {
         fmt_rec(f, lvl + 1, child)?;
     }
