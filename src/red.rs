@@ -56,6 +56,10 @@ impl RedTree {
     pub fn height(&self) -> usize {
         self.data.green.borrow().height()
     }
+
+    pub fn direction(&self) -> green::Direction {
+        self.data.green.borrow().direction()
+    }
     pub fn parent(&self) -> Option<RedTree> {
         let ret = self.data.parent.take();
         self.data.parent.set(ret.clone());

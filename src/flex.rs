@@ -1,4 +1,5 @@
 use crate::red;
+use crate::green;
 
 pub struct FlexBox {
     pub records: Vec<FlexItem>,
@@ -17,14 +18,26 @@ impl FlexBox {
     pub fn layout(&mut self, item: red::RedTree) {
         let mut pos = 0;
         let mut size = 0;
+        let direction = item.direction();
 
         for child in item.children() {
-            let flexitem = FlexItem {
-                rect: [pos, 0, child.width(), child.height()],
+            let mut flexitem = FlexItem {
+                rect: [0, 0, child.width(), child.height()],
             };
 
+            match direction {
+                green::Direction::Row =>{
+                    flexitem.rect[0] = pos;
+                }
+                green::Direction::Column=>{
+                    flexitem.rect[1] = size;
+                }
+            }
+
             self.records.push(flexitem);
+
             pos += child.width();
+            size += child.height();
             self.layout(child);
         }
     }
