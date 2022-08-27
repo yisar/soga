@@ -21,13 +21,13 @@ pub struct GreenTreeData {
     children: Vec<GreenTree>,
 }
 
-#[derive(Clone, Debug, Copy)]
+#[derive(Clone, Debug, Copy, PartialEq)]
 pub enum Direction {
     Row,
     Column,
 }
 
-#[derive(Clone, Debug, Copy)]
+#[derive(Clone, Debug, Copy, PartialEq)]
 pub enum Wrap {
     Wrap,
     NoWrap,
