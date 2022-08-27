@@ -12,6 +12,9 @@ fn make_tree() -> RedTree {
         .push(
             GreenTree::new("ul", 6, 6) // 0 0 6 6
                 .set("direction", "column")
+                .set("wrap", "wrap")
+                .set("grow", 1)
+                .set("shrink", 2)
                 .push(GreenTree::new("li", 2, 2)) // 0 0 2 2
                 .push(GreenTree::new("li", 4, 4)) // 0 2 4 4
         )

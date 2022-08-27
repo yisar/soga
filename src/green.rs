@@ -11,6 +11,12 @@ pub struct GreenTreeData {
     width: usize,
     height: usize,
     direction: Direction,
+    wrap: Wrap,
+    grow: usize,
+    shrink: usize,
+    grows: usize,
+    shrinks: usize,
+    order: usize,
     // todo more flex params
     children: Vec<GreenTree>,
 }
@@ -21,6 +27,12 @@ pub enum Direction {
     Column,
 }
 
+#[derive(Clone, Debug, Copy)]
+pub enum Wrap {
+    Wrap,
+    NoWrap,
+}
+
 impl GreenTree {
     pub fn new(tag: impl Into<String>, width: usize, height: usize) -> GreenTreeData {
         GreenTreeData {
@@ -28,6 +40,12 @@ impl GreenTree {
             width,
             height,
             direction: Direction::Row,
+            wrap: Wrap::NoWrap,
+            grow: 0,
+            shrink: 1,
+            grows: 0,
+            shrinks: 1,
+            order: 0,
             children: Vec::new(),
         }
     }
@@ -46,6 +64,30 @@ impl GreenTree {
 
     pub fn direction(&self) -> Direction {
         self.data.direction
+    }
+
+    pub fn wrap(&self) -> Wrap {
+        self.data.wrap
+    }
+
+    pub fn grow(&self) -> usize {
+        self.data.grow
+    }
+
+    pub fn shrink(&self) -> usize {
+        self.data.shrink
+    }
+
+    pub fn order(&self) -> usize {
+        self.data.order
+    }
+
+    pub fn grows(&self) -> usize {
+        self.data.grows
+    }
+
+    pub fn shrinks(&self) -> usize {
+        self.data.shrinks
     }
 
     pub fn children(&self) -> impl Iterator<Item = &GreenTree> {
@@ -86,6 +128,9 @@ impl GreenTreeData {
             "direction" => {
                 self.direction = value.into();
             }
+            "wrap" => {
+                self.wrap = value.into();
+            }
             _ => {}
         }
         self
@@ -95,6 +140,12 @@ impl GreenTreeData {
 impl From<&str> for Direction {
     fn from(src: &str) -> Direction {
         if src.eq_ignore_ascii_case("row") { Direction::Row } else { Direction::Column }
+    }
+}
+
+impl From<&str> for Wrap {
+    fn from(src: &str) -> Wrap {
+        if src.eq_ignore_ascii_case("wrap") { Wrap::Wrap } else { Wrap::NoWrap }
     }
 }
 

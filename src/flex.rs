@@ -19,6 +19,9 @@ impl FlexBox {
         let mut pos = 0;
         let mut size = 0;
         let direction = item.direction();
+        let wrap = item.wrap();
+
+        println!("{:#?}", wrap);
 
         for child in item.children() {
             let mut flexitem = FlexItem {

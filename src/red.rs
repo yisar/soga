@@ -57,9 +57,34 @@ impl RedTree {
         self.data.green.borrow().height()
     }
 
+    pub fn wrap(&self) -> green::Wrap {
+        self.data.green.borrow().wrap()
+    }
+
     pub fn direction(&self) -> green::Direction {
         self.data.green.borrow().direction()
     }
+
+    pub fn grow(&self) -> usize {
+        self.data.green.borrow().grow()
+    }
+
+    pub fn shrink(&self) -> usize {
+        self.data.green.borrow().shrink()
+    }
+
+    pub fn order(&self) -> usize {
+        self.data.green.borrow().order()
+    }
+
+    pub fn grows(&self) -> usize {
+        self.data.green.borrow().grows()
+    }
+
+    pub fn shrinks(&self) -> usize {
+        self.data.green.borrow().shrinks()
+    }
+
     pub fn parent(&self) -> Option<RedTree> {
         let ret = self.data.parent.take();
         self.data.parent.set(ret.clone());
