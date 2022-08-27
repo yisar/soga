@@ -1,13 +1,8 @@
-use std::{
-    cell::{Cell, RefCell},
-    fmt, iter,
-    rc::{self, Rc, Weak},
-};
+use std::{ cell::{ Cell, RefCell }, fmt, iter, rc::{ Rc, Weak } };
 use crate::sll;
 use crate::green;
 
-pub use green::{GreenTree, GreenTreeData};
-use rc::Weak;
+pub use green::{ GreenTree, GreenTreeData };
 
 #[derive(Clone)]
 pub struct RedTree {
@@ -52,6 +47,14 @@ impl RedTree {
     }
     pub fn tag(&self) -> String {
         self.data.green.borrow().tag().to_string()
+    }
+
+    pub fn width(&self) -> usize {
+        self.data.green.borrow().width()
+    }
+
+    pub fn height(&self) -> usize {
+        self.data.green.borrow().height()
     }
     pub fn parent(&self) -> Option<RedTree> {
         let ret = self.data.parent.take();
@@ -114,9 +117,11 @@ impl RedTree {
             match node.parent() {
                 Some(parent) => {
                     green = parent.data.green.borrow().replace_child(node.data.index.get(), green);
-                    node = parent
+                    node = parent;
                 }
-                None => return,
+                None => {
+                    return;
+                }
             }
         }
     }
