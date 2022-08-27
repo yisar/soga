@@ -131,6 +131,12 @@ impl GreenTreeData {
             "wrap" => {
                 self.wrap = value.into();
             }
+            "grow" => {
+                self.grow = value.parse::<usize>().unwrap();
+            }
+            "shrink" => {
+                self.shrink = value.parse::<usize>().unwrap();
+            }
             _ => {}
         }
         self

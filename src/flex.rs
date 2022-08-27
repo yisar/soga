@@ -4,6 +4,10 @@ use crate::green;
 pub struct FlexBox {
     pub records: Vec<FlexItem>,
     pub prev_pos: usize,
+    pos1: usize,
+    pos2: usize,
+    size1: usize,
+    size2: usize,
 }
 #[derive(Clone, Debug)]
 pub struct FlexItem {
@@ -15,6 +19,10 @@ impl FlexBox {
         FlexBox {
             records: Vec::new(),
             prev_pos: 0,
+            pos1: 0,
+            pos2: 0,
+            size1: 0,
+            size2: 0,
         }
     }
     pub fn layout(&mut self, item: red::RedTree) {
@@ -27,22 +35,45 @@ impl FlexBox {
         let direction = item.direction();
         let wrap = item.wrap();
 
+        let mut grows = item.grows();
+        let mut shrinks = item.shrinks();
+
+        match direction {
+            green::Direction::Row => {
+                self.pos1 = 0;
+                self.pos2 = 1;
+                self.size1 = 2;
+                self.size2 = 3;
+            }
+            green::Direction::Column => {
+                self.pos1 = 1;
+                self.pos2 = 0;
+                self.size1 = 3;
+                self.size2 = 2;
+            }
+        }
+
+        for child in item.children() {
+            // flex_dim -= child.frame[self.size1] as isize;
+
+            // println!("{:#?}", child.grow());
+
+            grows += child.grow();
+            shrinks += child.shrink();
+        }
+
+        println!("{:#?}", grows);
+
         for child in item.children() {
             let child_width = child.width();
             let child_height = child.height();
 
             let mut flexitem = FlexItem {
-                rect: [0, 0, child_width, child_width],
+                rect: [0, 0, 0, 0],
             };
 
-            match direction {
-                green::Direction::Row => {
-                    flexitem.rect[0] = x;
-                }
-                green::Direction::Column => {
-                    flexitem.rect[1] = y;
-                }
-            }
+            flexitem.rect[self.size1] = child_width;
+            flexitem.rect[self.size2] = child_height;
 
             x += child_width;
             y += child_height;
@@ -50,15 +81,15 @@ impl FlexBox {
             if wrap == green::Wrap::Wrap {
                 if x > p_width && direction == green::Direction::Row {
                     let ret = self.prev_pos + max_h;
-                    flexitem.rect[0] = 0;
-                    flexitem.rect[1] = ret;
+                    flexitem.rect[self.pos1] = 0;
+                    flexitem.rect[self.pos2] = ret;
                     self.prev_pos = ret;
                     max_h = 0;
                 }
                 if y > p_height && direction == green::Direction::Column {
                     let ret = self.prev_pos + max_w;
-                    flexitem.rect[1] = 0;
-                    flexitem.rect[0] = ret;
+                    flexitem.rect[self.pos2] = 0;
+                    flexitem.rect[self.pos1] = ret;
                     self.prev_pos = ret;
                     max_w = 0;
                 }

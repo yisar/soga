@@ -80,7 +80,7 @@ impl RedTree {
     pub fn grows(&self) -> usize {
         self.data.green.borrow().grows()
     }
-
+    
     pub fn shrinks(&self) -> usize {
         self.data.green.borrow().shrinks()
     }
