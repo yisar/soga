@@ -14,8 +14,8 @@ pub struct GreenTreeData {
     wrap: Wrap,
     grow: isize,
     shrink: isize,
-    grows: isize,
-    shrinks: isize,
+    align_items: Align,
+    justify_content: Align,
     order: usize,
     // todo more flex params
     children: Vec<GreenTree>,
@@ -28,6 +28,12 @@ pub enum Direction {
 }
 
 #[derive(Clone, Debug, Copy, PartialEq)]
+pub enum Align {
+    Auto,
+    Center,
+}
+
+#[derive(Clone, Debug, Copy, PartialEq)]
 pub enum Wrap {
     Wrap,
     NoWrap,
@@ -37,14 +43,14 @@ impl GreenTree {
     pub fn new(tag: impl Into<String>, width: usize, height: usize) -> GreenTreeData {
         GreenTreeData {
             tag: tag.into(),
-            width:width as isize,
-            height:height as isize,
+            width: width as isize,
+            height: height as isize,
             direction: Direction::Row,
             wrap: Wrap::NoWrap,
+            align_items: Align::Auto,
+            justify_content: Align::Auto,
             grow: 0,
             shrink: 1,
-            grows: 0,
-            shrinks: 1,
             order: 0,
             children: Vec::new(),
         }
@@ -82,12 +88,12 @@ impl GreenTree {
         self.data.order
     }
 
-    pub fn grows(&self) -> isize {
-        self.data.grows
+    pub fn align_items(&self) -> Align {
+        self.data.align_items
     }
 
-    pub fn shrinks(&self) -> isize {
-        self.data.shrinks
+    pub fn justify_content(&self) -> Align {
+        self.data.justify_content
     }
 
     pub fn children(&self) -> impl Iterator<Item = &GreenTree> {
@@ -137,6 +143,12 @@ impl GreenTreeData {
             "shrink" => {
                 self.shrink = value.parse::<isize>().unwrap();
             }
+            "align-items" =>{
+                self.align_items = value.into();
+            }
+            "justify-content" =>{
+                self.justify_content = value.into();
+            }
             _ => {}
         }
         self
@@ -152,6 +164,12 @@ impl From<&str> for Direction {
 impl From<&str> for Wrap {
     fn from(src: &str) -> Wrap {
         if src.eq_ignore_ascii_case("wrap") { Wrap::Wrap } else { Wrap::NoWrap }
+    }
+}
+
+impl From<&str> for Align {
+    fn from(src: &str) -> Align {
+        if src.eq_ignore_ascii_case("center") { Align::Center } else { Align::Auto }
     }
 }
 

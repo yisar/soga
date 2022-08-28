@@ -77,12 +77,12 @@ impl RedTree {
         self.data.green.borrow().order()
     }
 
-    pub fn grows(&self) -> isize {
-        self.data.green.borrow().grows()
+    pub fn align_items(&self) -> green::Align {
+        self.data.green.borrow().align_items()
     }
 
-    pub fn shrinks(&self) -> isize {
-        self.data.green.borrow().shrinks()
+    pub fn justify_content(&self) -> green::Align {
+        self.data.green.borrow().justify_content()
     }
 
     pub fn parent(&self) -> Option<RedTree> {

@@ -36,13 +36,15 @@ impl FlexBox {
         let wrap = item.wrap();
 
         let mut flex_dim: isize = 0;
+        let mut align_dim: isize = 0;
 
-        let mut grows = item.grows();
-        let mut shrinks = item.shrinks();
+        let mut grows = 0;
+        let mut shrinks = 1;
 
         match direction {
             green::Direction::Row => {
                 flex_dim = item.width() as isize;
+                align_dim = item.height() as isize;
                 self.pos1 = 0;
                 self.pos2 = 1;
                 self.size1 = 2;
@@ -50,6 +52,7 @@ impl FlexBox {
             }
             green::Direction::Column => {
                 flex_dim = item.height() as isize;
+                align_dim = item.width() as isize;
                 self.pos1 = 1;
                 self.pos2 = 0;
                 self.size1 = 3;
@@ -79,7 +82,6 @@ impl FlexBox {
 
             flexitem.rect[self.size1] = child_width;
             flexitem.rect[self.size2] = child_height;
-            flexitem.rect[self.pos1] = x;
 
             let mut size: isize = 0;
 
@@ -114,7 +116,28 @@ impl FlexBox {
                 }
             }
 
+            if x == 0 {
+                match item.justify_content() {
+                    Align::Center => {
+                        x = flex_dim / 2;
+                    }
+                    Auto => {}
+                }
+            }
+
+            flexitem.rect[self.pos1] += x;
+
+            let mut align = 0;
+
+            match item.align_items() {
+                Align::Center => {
+                    align = (align_dim / 2) - (flexitem.rect[self.size2] / 2);
+                }
+                Auto => {}
+            }
+
             flexitem.rect[self.size1] += size;
+            flexitem.rect[self.pos2] = align;
 
             x += flexitem.rect[self.size1];
             y += flexitem.rect[self.size2];
