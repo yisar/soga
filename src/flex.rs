@@ -118,10 +118,10 @@ impl FlexBox {
 
             if x == 0 {
                 match item.justify_content() {
-                    Align::Center => {
+                    green::Align::Center => {
                         x = flex_dim / 2;
                     }
-                    Auto => {}
+                    green::Align::Auto  => {}
                 }
             }
 
@@ -130,10 +130,10 @@ impl FlexBox {
             let mut align = 0;
 
             match item.align_items() {
-                Align::Center => {
+                green::Align::Center => {
                     align = (align_dim / 2) - (flexitem.rect[self.size2] / 2);
                 }
-                Auto => {}
+                green::Align::Auto => {}
             }
 
             flexitem.rect[self.size1] += size;
