@@ -28,8 +28,8 @@ impl FlexBox {
     pub fn layout(&mut self, item: red::RedTree) {
         let mut x = 0;
         let mut y = 0;
-        let mut max_h:isize = 0;
-        let mut max_w:isize = 0;
+        let mut max_h: isize = 0;
+        let mut max_w: isize = 0;
         let p_width = item.width();
         let p_height = item.height();
         let direction = item.direction();
@@ -69,8 +69,6 @@ impl FlexBox {
             shrinks += child.shrink();
         }
 
-        println!("{:#?}", flex_dim);
-
         for child in item.children() {
             let child_width = child.width();
             let child_height = child.height();
@@ -81,10 +79,9 @@ impl FlexBox {
 
             flexitem.rect[self.size1] = child_width;
             flexitem.rect[self.size2] = child_height;
+            flexitem.rect[self.pos1] = x;
 
-            x += child_width;
-            y += child_height;
-
+            let mut size: isize = 0;
 
             match wrap {
                 green::Wrap::Wrap => {
@@ -106,15 +103,21 @@ impl FlexBox {
                 green::Wrap::NoWrap => {
                     if flex_dim > 0 {
                         if child.grow() != 0 {
-                            flexitem.rect[self.size1] = (flex_dim / grows) * child.grow();
+                            size += (flex_dim / grows) * child.grow();
                         }
                     } else if flex_dim < 0 {
                         if child.shrink() != 0 {
-                            flexitem.rect[self.size1] = (flex_dim / shrinks) * child.shrink();
+                            size += (flex_dim / shrinks) * child.shrink();
                         }
                     }
+
                 }
             }
+
+            flexitem.rect[self.size1] += size;
+
+            x += flexitem.rect[self.size1];
+            y += flexitem.rect[self.size2];
 
             if child_width > max_w {
                 max_w = child_width;
