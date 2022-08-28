@@ -16,26 +16,33 @@ cargo test
 ### Use
 
 ```rs
-use soga::flexbox::FlexBox;
-use soga::flexbox::FlexItem;
-use std::convert::TryInto;
+pub mod green;
+pub mod red;
+pub mod sll;
+pub mod flex;
 
-fn main() {
-    let mut root = FlexItem::new(100, 100);
+use crate::green::*;
+use crate::red::*;
+use crate::flex::*;
 
-    let child1 = FlexItem::new(100, 50);
-    let child2 = FlexItem::new(100, 50);
+fn make_tree() -> RedTree {
+    let tree: GreenTree = GreenTree::new("div", 10, 10) // 0 0 10 10
+        .push(
+            GreenTree::new("ul", 6, 6) // 0 0 6 6
+                .push(GreenTree::new("li", 0, 6).set("grow", "1")) // 0 0 1 6
+                .push(GreenTree::new("li", 0, 6).set("grow", "5")) // 1 0 5 6
+        )
+        .into();
 
-    root.add(child1);
-    root.add(child2);
-
-    let mut flexbox = FlexBox::new();
-    flexbox.layout(&mut root);
-
-    assert_eq!(root.children[0].frame, [0, 0, 100, 50]);
-    assert_eq!(root.children[1].frame, [50, 0, 100, 50]);
+    tree.into()
 }
 
+fn main() {
+    let tree = make_tree();
+    let mut flexbox = FlexBox::new();
+    flexbox.layout(tree);
+    assert_eq!(flexbox.records[0].rect, [0, 0, 10, 10]);
+}
 ```
 
 ### License
