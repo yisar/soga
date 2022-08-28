@@ -49,11 +49,11 @@ impl RedTree {
         self.data.green.borrow().tag().to_string()
     }
 
-    pub fn width(&self) -> usize {
+    pub fn width(&self) -> isize {
         self.data.green.borrow().width()
     }
 
-    pub fn height(&self) -> usize {
+    pub fn height(&self) -> isize {
         self.data.green.borrow().height()
     }
 
@@ -65,11 +65,11 @@ impl RedTree {
         self.data.green.borrow().direction()
     }
 
-    pub fn grow(&self) -> usize {
+    pub fn grow(&self) -> isize {
         self.data.green.borrow().grow()
     }
 
-    pub fn shrink(&self) -> usize {
+    pub fn shrink(&self) -> isize {
         self.data.green.borrow().shrink()
     }
 
@@ -77,11 +77,11 @@ impl RedTree {
         self.data.green.borrow().order()
     }
 
-    pub fn grows(&self) -> usize {
+    pub fn grows(&self) -> isize {
         self.data.green.borrow().grows()
     }
-    
-    pub fn shrinks(&self) -> usize {
+
+    pub fn shrinks(&self) -> isize {
         self.data.green.borrow().shrinks()
     }
 

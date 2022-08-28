@@ -3,7 +3,7 @@ use crate::green;
 
 pub struct FlexBox {
     pub records: Vec<FlexItem>,
-    pub prev_pos: usize,
+    pub prev_pos: isize,
     pos1: usize,
     pos2: usize,
     size1: usize,
@@ -11,7 +11,7 @@ pub struct FlexBox {
 }
 #[derive(Clone, Debug)]
 pub struct FlexItem {
-    pub rect: [usize; 4],
+    pub rect: [isize; 4],
 }
 
 impl FlexBox {
@@ -28,8 +28,8 @@ impl FlexBox {
     pub fn layout(&mut self, item: red::RedTree) {
         let mut x = 0;
         let mut y = 0;
-        let mut max_h = 0;
-        let mut max_w = 0;
+        let mut max_h:isize = 0;
+        let mut max_w:isize = 0;
         let p_width = item.width();
         let p_height = item.height();
         let direction = item.direction();

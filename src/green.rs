@@ -8,14 +8,14 @@ pub struct GreenTree {
 #[derive(Clone)]
 pub struct GreenTreeData {
     tag: String,
-    width: usize,
-    height: usize,
+    width: isize,
+    height: isize,
     direction: Direction,
     wrap: Wrap,
-    grow: usize,
-    shrink: usize,
-    grows: usize,
-    shrinks: usize,
+    grow: isize,
+    shrink: isize,
+    grows: isize,
+    shrinks: isize,
     order: usize,
     // todo more flex params
     children: Vec<GreenTree>,
@@ -37,8 +37,8 @@ impl GreenTree {
     pub fn new(tag: impl Into<String>, width: usize, height: usize) -> GreenTreeData {
         GreenTreeData {
             tag: tag.into(),
-            width,
-            height,
+            width:width as isize,
+            height:height as isize,
             direction: Direction::Row,
             wrap: Wrap::NoWrap,
             grow: 0,
@@ -54,11 +54,11 @@ impl GreenTree {
         self.data.tag.as_str()
     }
 
-    pub fn width(&self) -> usize {
+    pub fn width(&self) -> isize {
         self.data.width
     }
 
-    pub fn height(&self) -> usize {
+    pub fn height(&self) -> isize {
         self.data.height
     }
 
@@ -70,11 +70,11 @@ impl GreenTree {
         self.data.wrap
     }
 
-    pub fn grow(&self) -> usize {
+    pub fn grow(&self) -> isize {
         self.data.grow
     }
 
-    pub fn shrink(&self) -> usize {
+    pub fn shrink(&self) -> isize {
         self.data.shrink
     }
 
@@ -82,11 +82,11 @@ impl GreenTree {
         self.data.order
     }
 
-    pub fn grows(&self) -> usize {
+    pub fn grows(&self) -> isize {
         self.data.grows
     }
 
-    pub fn shrinks(&self) -> usize {
+    pub fn shrinks(&self) -> isize {
         self.data.shrinks
     }
 
@@ -132,10 +132,10 @@ impl GreenTreeData {
                 self.wrap = value.into();
             }
             "grow" => {
-                self.grow = value.parse::<usize>().unwrap();
+                self.grow = value.parse::<isize>().unwrap();
             }
             "shrink" => {
-                self.shrink = value.parse::<usize>().unwrap();
+                self.shrink = value.parse::<isize>().unwrap();
             }
             _ => {}
         }
