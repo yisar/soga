@@ -35,17 +35,21 @@ impl FlexBox {
         let direction = item.direction();
         let wrap = item.wrap();
 
+        let mut flex_dim: isize = 0;
+
         let mut grows = item.grows();
         let mut shrinks = item.shrinks();
 
         match direction {
             green::Direction::Row => {
+                flex_dim = item.width() as isize;
                 self.pos1 = 0;
                 self.pos2 = 1;
                 self.size1 = 2;
                 self.size2 = 3;
             }
             green::Direction::Column => {
+                flex_dim = item.height() as isize;
                 self.pos1 = 1;
                 self.pos2 = 0;
                 self.size1 = 3;
@@ -54,15 +58,18 @@ impl FlexBox {
         }
 
         for child in item.children() {
-            // flex_dim -= child.frame[self.size1] as isize;
+            let mut temp_rect = [0; 4];
 
-            // println!("{:#?}", child.grow());
+            temp_rect[self.size1] = child.width();
+            temp_rect[self.size2] = child.height();
+
+            flex_dim -= temp_rect[self.size1] as isize;
 
             grows += child.grow();
             shrinks += child.shrink();
         }
 
-        println!("{:#?}", grows);
+        println!("{:#?}", flex_dim);
 
         for child in item.children() {
             let child_width = child.width();
@@ -78,20 +85,34 @@ impl FlexBox {
             x += child_width;
             y += child_height;
 
-            if wrap == green::Wrap::Wrap {
-                if x > p_width && direction == green::Direction::Row {
-                    let ret = self.prev_pos + max_h;
-                    flexitem.rect[self.pos1] = 0;
-                    flexitem.rect[self.pos2] = ret;
-                    self.prev_pos = ret;
-                    max_h = 0;
+
+            match wrap {
+                green::Wrap::Wrap => {
+                    if x > p_width && direction == green::Direction::Row {
+                        let ret = self.prev_pos + max_h;
+                        flexitem.rect[self.pos1] = 0;
+                        flexitem.rect[self.pos2] = ret;
+                        self.prev_pos = ret;
+                        max_h = 0;
+                    }
+                    if y > p_height && direction == green::Direction::Column {
+                        let ret = self.prev_pos + max_w;
+                        flexitem.rect[self.pos2] = 0;
+                        flexitem.rect[self.pos1] = ret;
+                        self.prev_pos = ret;
+                        max_w = 0;
+                    }
                 }
-                if y > p_height && direction == green::Direction::Column {
-                    let ret = self.prev_pos + max_w;
-                    flexitem.rect[self.pos2] = 0;
-                    flexitem.rect[self.pos1] = ret;
-                    self.prev_pos = ret;
-                    max_w = 0;
+                green::Wrap::NoWrap => {
+                    if flex_dim > 0 {
+                        if child.grow() != 0 {
+                            flexitem.rect[self.size1] = (flex_dim / grows) * child.grow();
+                        }
+                    } else if flex_dim < 0 {
+                        if child.shrink() != 0 {
+                            flexitem.rect[self.size1] = (flex_dim / shrinks) * child.shrink();
+                        }
+                    }
                 }
             }
 
