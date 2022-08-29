@@ -76,7 +76,7 @@ impl FlexBox {
             let child_height = child.height();
 
             let mut flexitem = FlexItem {
-                rect: [0, 0, 0, 0],
+                rect: [4; 0],
             };
 
             flexitem.rect[self.size1] = child_width;
@@ -87,10 +87,10 @@ impl FlexBox {
             match wrap {
                 green::Wrap::Wrap => {
                     let child_size = flexitem.rect[self.size1];
-                    if  child_size > size_dim  {
+                    if child_size > size_dim  {
                         x = 0;
                         y += flexitem.rect[self.size2];
-                    }else{
+                    } else {
                         size_dim -= child_size;
                     }
                 }
