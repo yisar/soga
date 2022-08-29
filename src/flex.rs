@@ -28,15 +28,12 @@ impl FlexBox {
     pub fn layout(&mut self, item: red::RedTree) {
         let mut x = 0;
         let mut y = 0;
-        let mut max_h: isize = 0;
-        let mut max_w: isize = 0;
-        let p_width = item.width();
-        let p_height = item.height();
         let direction = item.direction();
         let wrap = item.wrap();
 
         let mut flex_dim: isize = 0;
         let mut align_dim: isize = 0;
+        let mut size_dim: isize = 0;
 
         let mut grows = 0;
         let mut shrinks = 1;
@@ -44,6 +41,7 @@ impl FlexBox {
         match direction {
             green::Direction::Row => {
                 flex_dim = item.width() as isize;
+                size_dim = item.width() as isize;
                 align_dim = item.height() as isize;
                 self.pos1 = 0;
                 self.pos2 = 1;
@@ -52,6 +50,7 @@ impl FlexBox {
             }
             green::Direction::Column => {
                 flex_dim = item.height() as isize;
+                size_dim = item.height() as isize;
                 align_dim = item.width() as isize;
                 self.pos1 = 1;
                 self.pos2 = 0;
@@ -87,19 +86,12 @@ impl FlexBox {
 
             match wrap {
                 green::Wrap::Wrap => {
-                    if x > p_width && direction == green::Direction::Row {
-                        let ret = self.prev_pos + max_h;
-                        flexitem.rect[self.pos1] = 0;
-                        flexitem.rect[self.pos2] = ret;
-                        self.prev_pos = ret;
-                        max_h = 0;
-                    }
-                    if y > p_height && direction == green::Direction::Column {
-                        let ret = self.prev_pos + max_w;
-                        flexitem.rect[self.pos2] = 0;
-                        flexitem.rect[self.pos1] = ret;
-                        self.prev_pos = ret;
-                        max_w = 0;
+                    let child_size = flexitem.rect[self.size1];
+                    if  child_size > size_dim  {
+                        x = 0;
+                        y += flexitem.rect[self.size2];
+                    }else{
+                        size_dim -= child_size;
                     }
                 }
                 green::Wrap::NoWrap => {
@@ -127,7 +119,7 @@ impl FlexBox {
 
             flexitem.rect[self.pos1] += x;
 
-            let mut align = 0;
+            let mut align = y;
 
             match item.align_items() {
                 green::Align::Center => {
@@ -141,14 +133,6 @@ impl FlexBox {
 
             x += flexitem.rect[self.size1];
             y += flexitem.rect[self.size2];
-
-            if child_width > max_w {
-                max_w = child_width;
-            }
-
-            if child_height > max_h {
-                max_h = child_height;
-            }
 
             self.records.push(flexitem);
             self.layout(child);
