@@ -16,14 +16,9 @@ cargo test
 ### Use
 
 ```rs
-pub mod green;
-pub mod red;
-pub mod sll;
-pub mod flex;
-
-use crate::green::*;
-use crate::red::*;
-use crate::flex::*;
+use crate::soga::green::*;
+use crate::soga::red::*;
+use crate::soga::flex::*;
 
 fn make_tree() -> RedTree {
     let tree: GreenTree = GreenTree::new("div", 10, 10) // 0 0 10 10
