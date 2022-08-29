@@ -76,7 +76,7 @@ impl FlexBox {
             let child_height = child.height();
 
             let mut flexitem = FlexItem {
-                rect: [4; 0],
+                rect: [0; 4],
             };
 
             flexitem.rect[self.size1] = child_width;
