@@ -55,12 +55,6 @@ impl Idom {
         self.current_node.insert_child(node.index(), self.current_node.index())
     }
 
-    fn open(&mut self, name: String, attrs: HashMap<String, String>) -> Void {
-        self.open_start(name);
-        self.attr_builder = attrs;
-        self.close_start(name);
-    }
-
     fn open_start(&mut self, name: String) -> Void {
         self.next();
         self.render(name);
@@ -74,30 +68,6 @@ impl Idom {
 
         self.attr_builder = None;
         self.enter();
-    }
-
-    fn close(&mut self, name: String) -> Void {
-        let next_node = self.next();
-        loop {
-            if next_node == None {
-                break;
-            }
-            let next = next_node.next();
-            self.current_parent.remove_child(next_node.index());
-            next_node = next;
-        }
-        exit()
-    }
-
-    fn text(&mut self, value: String) -> Void {
-        self.next();
-        let node = self.render("#text".to_string());
-        let data = self.get_data(node);
-
-        if data.text != value {
-            data.text = value;
-            node.data = value;
-        }
     }
 
     fn get_data(&mut self, node) -> NodeData {
@@ -117,4 +87,37 @@ impl Idom {
         }
     }
 
+}
+
+impl Idom{
+    fn text(&mut self, value: String) -> Void {
+        self.next();
+        let node = self.render("#text".to_string());
+        let data = self.get_data(node);
+
+        if data.text != value {
+            data.text = value;
+            node.data = value;
+        }
+    }
+
+    fn close(&mut self, name: String) -> Void {
+        let next_node = self.next();
+        loop {
+            if next_node == None {
+                break;
+            }
+            let next = next_node.next();
+            self.current_parent.remove_child(next_node.index());
+            next_node = next;
+        }
+        exit()
+    }
+
+
+    fn open(&mut self, name: String, attrs: HashMap<String, String>) -> Void {
+        self.open_start(name);
+        self.attr_builder = attrs;
+        self.close_start(name);
+    }
 }
