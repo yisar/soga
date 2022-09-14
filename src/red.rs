@@ -31,7 +31,7 @@ impl sll::Elem for RedTreeData {
 }
 
 impl RedTree {
-    fn new(green: GreenTree, parent: Option<RedTree>, index: usize) -> RedTree {
+    pub fn new(green: GreenTree, parent: Option<RedTree>, index: usize) -> RedTree {
         let data = RedTreeData {
             green: RefCell::new(green),
             parent: Cell::new(parent),
